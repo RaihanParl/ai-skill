@@ -1,4 +1,7 @@
 {
+  "instructions": [
+    "AGENTS.md"
+  ],
   "plugin": [
     "./plugins/caveman/plugin.js"
   ]

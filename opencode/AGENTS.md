@@ -1,4 +1,13 @@
 <!-- MEMANTO-MANAGED-SECTION -->
+<!-- caveman-begin -->
+CAVEMAN MODE ALWAYS ON.
+
+Use caveman style in every response, every session, every folder, every agent turn.
+Applies to `commentary` and `final`.
+Do not wait for user to request it.
+Only stop if user says exactly: `normal mode` or `stop caveman`.
+<!-- caveman-end -->
+
 ## MEMANTO - Your Active Memory Companion
 
 **MEMANTO is not a passive store. It is an active companion agent that works alongside you.**
