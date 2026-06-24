@@ -184,6 +184,99 @@ class LooperTests(unittest.TestCase):
             review = (work / "loop-workspace" / "review-plan_gate-1.md").read_text(encoding="utf-8")
             self.assertIn("unparseable_judge_output", review)
 
+    def test_fixed_passes_does_not_bypass_failed_programmatic_check(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            (work / "inputs").mkdir()
+            (work / "inputs" / "process-notes.md").write_text("Need a useful loop.\n", encoding="utf-8")
+            write_loop_yaml(work / "loop.yaml")
+            shutil.copyfile(RUNNER_TEMPLATE, work / "run-loop.py")
+
+            loop_yaml = (work / "loop.yaml").read_text(encoding="utf-8")
+            loop_yaml = loop_yaml.replace("verdict_policy: revise_until_clean", "verdict_policy: fixed_passes")
+            loop_yaml = loop_yaml.replace("verdict_source: reviewer-1\n", "")
+            loop_yaml = loop_yaml.replace("        criteria:", "    criteria:")
+            fail_check = work / "fail_check.py"
+            fail_check.write_text("import sys\nsys.exit(9)\n", encoding="utf-8")
+            lines = []
+            for line in loop_yaml.splitlines():
+                if "check_contains.py" in line:
+                    lines.append(f'      check: ["{sys.executable}", "{fail_check.as_posix()}"]')
+                else:
+                    lines.append(line)
+            loop_yaml = "\n".join(lines) + "\n"
+            (work / "loop.yaml").write_text(loop_yaml, encoding="utf-8")
+
+            compiled = run_cmd(
+                [sys.executable, str(LOOPER), "compile", "loop.yaml", "--out", "loop.resolved.json"],
+                work,
+            )
+            self.assertEqual(compiled.returncode, 0, compiled.stderr)
+            result = run_cmd([sys.executable, "run-loop.py"], work)
+            self.assertNotEqual(result.returncode, 0)
+            state = json.loads((work / "loop-workspace" / "state.json").read_text(encoding="utf-8"))
+            self.assertNotEqual(state["status"], "passed")
+            self.assertIn(state["failure"], {"delivery_gate_max_revisions_reached", "no_progress_detected"})
+
+    def test_runner_redacts_configured_files_before_judge_send(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp)
+            (work / "inputs").mkdir()
+            secret_file = work / "inputs" / "secret.txt"
+            secret_file.write_text("SUPERSECRET-LOOPER-VALUE\n", encoding="utf-8")
+            (work / "inputs" / "process-notes.md").write_text("Need a useful loop.\n", encoding="utf-8")
+            capture_file = work / "judge-stdin.txt"
+            judge_script = work / "spy_judge.py"
+            judge_script.write_text(
+                "import json\n"
+                "import pathlib\n"
+                "import sys\n"
+                "\n"
+                "prompt = sys.stdin.read()\n"
+                f"capture = pathlib.Path({str(capture_file)!r})\n"
+                "previous = capture.read_text(encoding='utf-8') if capture.exists() else ''\n"
+                "capture.write_text(previous + '\\n---CALL---\\n' + prompt, encoding='utf-8')\n"
+                "if 'SUPERSECRET-LOOPER-VALUE' in prompt:\n"
+                "    sys.exit(7)\n"
+                "print('```json')\n"
+                "print(json.dumps({'verdict': 'pass', 'blocking_issues': [], 'confidence': 1.0, 'notes': 'ok'}))\n"
+                "print('```')\n",
+                encoding="utf-8",
+            )
+            write_loop_yaml(work / "loop.yaml", judge_script=judge_script)
+            shutil.copyfile(RUNNER_TEMPLATE, work / "run-loop.py")
+
+            loop_yaml = (work / "loop.yaml").read_text(encoding="utf-8")
+            loop_yaml = loop_yaml.replace(
+                "privacy:\n  egress: []",
+                "privacy:\n  egress:\n    - to: reviewer-1\n      sends: [plan, deliveries]\n      redact: [\"inputs/**\"]\n      consent: required",
+            )
+            (work / "loop.yaml").write_text(loop_yaml, encoding="utf-8")
+
+            compiled = run_cmd(
+                [sys.executable, str(LOOPER), "compile", "loop.yaml", "--out", "loop.resolved.json"],
+                work,
+            )
+            self.assertEqual(compiled.returncode, 0, compiled.stderr)
+            workspace = work / "loop-workspace"
+            workspace.mkdir()
+            (workspace / "plan.md").write_text("Plan leaked SUPERSECRET-LOOPER-VALUE before redaction.\n", encoding="utf-8")
+            result = run_cmd([sys.executable, "run-loop.py"], work)
+            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+            judge_prompt = capture_file.read_text(encoding="utf-8")
+            self.assertNotIn("SUPERSECRET-LOOPER-VALUE", judge_prompt)
+            self.assertIn("[redacted:inputs/secret.txt]", judge_prompt)
+
+    def test_cli_errors_are_clean_for_missing_files_and_runner_help(self) -> None:
+        result = run_cmd([sys.executable, str(LOOPER), "compile", "does-not-exist.yaml"], ROOT)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("looper: error: Could not read", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+        help_result = run_cmd([sys.executable, str(RUNNER_TEMPLATE), "--help"], ROOT)
+        self.assertEqual(help_result.returncode, 0)
+        self.assertIn("Run a compiled Looper loop", help_result.stdout)
+
     def test_session_prompt_command_renders_from_resolved_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             work = Path(tmp)

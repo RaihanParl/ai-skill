@@ -7,6 +7,7 @@ loop.resolved.json and uses only Python stdlib.
 
 from __future__ import annotations
 
+import argparse
 import datetime as _dt
 import fnmatch
 import json
@@ -31,8 +32,13 @@ def utc_now() -> str:
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    try:
+        with path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except OSError as exc:
+        raise RunnerError(f"Could not read {path}: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise RunnerError(f"Could not parse JSON in {path}: {exc}") from exc
     if not isinstance(data, dict):
         raise RunnerError(f"{path} must contain a JSON object")
     return data
@@ -225,6 +231,32 @@ class Runner:
                 redactions.extend(entry.get("redact", []))
         return redactions or [".env", ".env.*", "secrets/**", "**/*.key"]
 
+    def redact_prompt_for_member(self, member_id: str, prompt: str) -> str:
+        redactions = self.redactions_for(member_id)
+        redacted = prompt
+        for pattern in redactions:
+            paths = list(self.base_dir.glob(pattern))
+            if pattern.endswith("/**"):
+                root = self.base_dir / pattern[:-3]
+                if root.exists():
+                    paths.extend(root.rglob("*"))
+            for path in paths:
+                if not path.is_file():
+                    continue
+                try:
+                    secret_text = path.read_text(encoding="utf-8")
+                except UnicodeDecodeError:
+                    continue
+                if not secret_text.strip() or len(secret_text) > 1_000_000:
+                    continue
+                marker = f"[redacted:{path.relative_to(self.base_dir).as_posix()}]"
+                redacted = redacted.replace(secret_text, marker)
+                for line in secret_text.splitlines():
+                    stripped = line.strip()
+                    if len(stripped) >= 8:
+                        redacted = redacted.replace(stripped, marker)
+        return redacted
+
     def ensure_consent(self, member_id: str) -> None:
         member = self.member(member_id)
         if member.get("local"):
@@ -371,7 +403,10 @@ class Runner:
         self.ensure_consent(member_id)
         output = call_model(
             self.member(member_id),
-            self.judge_prompt(gate_name, artifact_label, artifact_text, criteria),
+            self.redact_prompt_for_member(
+                member_id,
+                self.judge_prompt(gate_name, artifact_label, artifact_text, criteria),
+            ),
             self.base_dir,
         )
         verdict = parse_judge_output(output)
@@ -397,6 +432,7 @@ class Runner:
                 "Do not return a verdict.\n\n"
                 f"Gate: {gate_name}\nArtifact: {artifact_label}\n\n{artifact_text}\n"
             )
+            prompt = self.redact_prompt_for_member(member_id, prompt)
             notes.append(f"## {member_id}\n\n{call_model(member, prompt, self.base_dir)}")
             self.append_log("reviewer_notes", gate=gate_name, member=member_id)
         return notes
@@ -464,9 +500,12 @@ class Runner:
                     failures.extend(verdict.get("blocking_issues") or ["Judge requested revision"])
 
             if policy == "fixed_passes":
-                if revision >= max_revisions:
+                if failures:
+                    pass
+                elif revision >= max_revisions:
                     return True
-                failures.append("fixed_passes reviewer pass")
+                else:
+                    failures.append("fixed_passes reviewer pass")
 
             if not failures:
                 self.save_state(status=f"{gate_name}_passed", **{gate_name: {"passed_at": utc_now()}})
@@ -529,10 +568,17 @@ class Runner:
 
 
 def main(argv: list[str] | None = None) -> int:
-    argv = list(sys.argv[1:] if argv is None else argv)
-    spec_path = Path(argv[0]) if argv else Path(__file__).with_name("loop.resolved.json")
+    parser = argparse.ArgumentParser(description="Run a compiled Looper loop.")
+    parser.add_argument(
+        "spec_path",
+        nargs="?",
+        type=Path,
+        default=Path(__file__).with_name("loop.resolved.json"),
+        help="Path to loop.resolved.json (defaults to the file next to run-loop.py).",
+    )
+    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        return Runner(spec_path).run()
+        return Runner(args.spec_path).run()
     except RunnerError as exc:
         print(f"run-loop: error: {exc}", file=sys.stderr)
         return 2
