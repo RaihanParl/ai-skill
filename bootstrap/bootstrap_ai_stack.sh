@@ -16,7 +16,10 @@ SYNC_REPO_FILES="${SYNC_REPO_FILES:-1}"
 SETUP_CRON_JOBS="${SETUP_CRON_JOBS:-1}"
 ENABLE_MEMORY_SYNC_CRON="${ENABLE_MEMORY_SYNC_CRON:-1}"
 ENABLE_OPENCODE_MONITOR_CRON="${ENABLE_OPENCODE_MONITOR_CRON:-1}"
+ENABLE_HERMES_SESSION_MONITOR_CRON="${ENABLE_HERMES_SESSION_MONITOR_CRON:-1}"
 ENABLE_OPENCODE_BRIDGE_CRON="${ENABLE_OPENCODE_BRIDGE_CRON:-1}"
+ENABLE_TELEGRAM_PING_CRON="${ENABLE_TELEGRAM_PING_CRON:-1}"
+TELEGRAM_PING_CRON_SCHEDULE="${TELEGRAM_PING_CRON_SCHEDULE:-every 6h}"
 AUTO_RUN_HERMES_MODEL="${AUTO_RUN_HERMES_MODEL:-0}"
 AUTO_RUN_HERMES_GATEWAY_SETUP="${AUTO_RUN_HERMES_GATEWAY_SETUP:-0}"
 
@@ -258,8 +261,10 @@ sync_repo_files() {
   run cp "$AI_SKILL_DIR/hermes/scripts/opencode_telegram_bridge_tick.sh" "$HERMES_SCRIPTS_DIR/opencode_telegram_bridge_tick.sh"
   run cp "$AI_SKILL_DIR/hermes/scripts/opencode_bridge_launch.sh" "$HERMES_SCRIPTS_DIR/opencode_bridge_launch.sh"
   run cp "$AI_SKILL_DIR/hermes/scripts/opencode_monitor.py" "$HERMES_SCRIPTS_DIR/opencode_monitor.py"
+  run cp "$AI_SKILL_DIR/hermes/scripts/hermes_session_monitor.py" "$HERMES_SCRIPTS_DIR/hermes_session_monitor.py"
   run cp "$AI_SKILL_DIR/hermes/scripts/sync_memory_to_ai_skill.py" "$HERMES_SCRIPTS_DIR/sync_memory_to_ai_skill.py"
-  run chmod +x "$HERMES_SCRIPTS_DIR/opencode_telegram_bridge.py" "$HERMES_SCRIPTS_DIR/opencode_telegram_bridge_tick.sh" "$HERMES_SCRIPTS_DIR/opencode_bridge_launch.sh" "$HERMES_SCRIPTS_DIR/opencode_monitor.py" "$HERMES_SCRIPTS_DIR/sync_memory_to_ai_skill.py"
+  run cp "$AI_SKILL_DIR/hermes/scripts/telegram_ping.sh" "$HERMES_SCRIPTS_DIR/telegram_ping.sh"
+  run chmod +x "$HERMES_SCRIPTS_DIR/opencode_telegram_bridge.py" "$HERMES_SCRIPTS_DIR/opencode_telegram_bridge_tick.sh" "$HERMES_SCRIPTS_DIR/opencode_bridge_launch.sh" "$HERMES_SCRIPTS_DIR/opencode_monitor.py" "$HERMES_SCRIPTS_DIR/hermes_session_monitor.py" "$HERMES_SCRIPTS_DIR/sync_memory_to_ai_skill.py" "$HERMES_SCRIPTS_DIR/telegram_ping.sh"
 }
 
 configure_hermes_env() {
@@ -351,6 +356,12 @@ setup_cron_jobs() {
   fi
   if [ "$ENABLE_OPENCODE_MONITOR_CRON" = "1" ] && [ -n "$TELEGRAM_HOME_CHANNEL" ]; then
     ensure_cron_job opencode-telegram-monitor 'every 1m' --deliver "telegram:$TELEGRAM_HOME_CHANNEL" --script opencode_monitor.py --no-agent
+  fi
+  if [ "$ENABLE_HERMES_SESSION_MONITOR_CRON" = "1" ] && [ -n "$TELEGRAM_HOME_CHANNEL" ]; then
+    ensure_cron_job hermes-session-monitor 'every 1m' --deliver "telegram:$TELEGRAM_HOME_CHANNEL" --script hermes_session_monitor.py --no-agent
+  fi
+  if [ "$ENABLE_TELEGRAM_PING_CRON" = "1" ] && [ -n "$TELEGRAM_HOME_CHANNEL" ]; then
+    ensure_cron_job telegram-ping 'every 6h' --deliver "telegram:$TELEGRAM_HOME_CHANNEL" --script telegram_ping.sh --no-agent
   fi
   if [ "$ENABLE_MEMORY_SYNC_CRON" = "1" ]; then
     ensure_cron_job sync-hermes-memory-to-ai-skill 'every 1h' --deliver local --script sync_memory_to_ai_skill.py --no-agent --workdir "$AI_SKILL_DIR"
