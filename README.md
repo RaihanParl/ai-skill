@@ -8,3 +8,4 @@ Current contents:
 - Hermes OpenCode Telegram bridge scripts
 - Hermes OpenCode monitor script
 - Cursor rule files used by the local assistant setup
+- OpenCode local assistant configs: AGENTS.md, agents, commands, skills, and opencode.jsonc

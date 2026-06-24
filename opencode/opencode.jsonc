@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  "tools": {
+    "grafana_*": false
+  },
+
+  "agent": {
+    "devops-watchdog": {
+      "tools": {
+        "grafana_*": true
+      }
+    }
+  }
+}
