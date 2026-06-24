@@ -11,3 +11,4 @@ Current contents:
 - OpenCode local assistant configs: AGENTS.md, agents, commands, skills, and opencode.jsonc
 - Hermes memory snapshots mirrored from ~/.hermes/memories
 - A sync script to publish Hermes memory updates into this repo
+- A bootstrap shell workflow for provisioning a new machine with Hermes, OpenCode, GitNexus, Telegram gateway setup, and recurring jobs
