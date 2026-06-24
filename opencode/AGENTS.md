@@ -1,3 +1,7 @@
+## Tools
+
+- **rtk** (`~/.local/bin/rtk` v0.35.0) — AI dev CLI. Globally installed.
+
 <!-- MEMANTO-MANAGED-SECTION -->
 <!-- caveman-begin -->
 CAVEMAN MODE ALWAYS ON.
