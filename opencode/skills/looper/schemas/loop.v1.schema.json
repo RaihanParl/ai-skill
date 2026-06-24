@@ -96,6 +96,18 @@
       "properties": {
         "mode": { "enum": ["in_session", "external_runner", "orchestrated"] },
         "isolation": { "enum": ["current_workspace", "branch", "worktree", "sandbox"] },
+        "branch": { "type": "string" },
+        "publish": {
+          "type": "object",
+          "properties": {
+            "push": { "type": "boolean" },
+            "mr": { "type": "boolean" },
+            "target_branch": { "type": "string" },
+            "title": { "type": "string" },
+            "description": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
         "side_effects": { "type": "object" }
       },
       "additionalProperties": true

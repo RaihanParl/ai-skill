@@ -1,6 +1,7 @@
 ## Tools
 
 - **rtk** (`~/.local/bin/rtk` v0.35.0) — AI dev CLI. Globally installed.
+- **glab** (`/opt/homebrew/bin/glab` v1.103.0) — GitLab CLI. Globally installed.
 
 <!-- MEMANTO-MANAGED-SECTION -->
 <!-- caveman-begin -->

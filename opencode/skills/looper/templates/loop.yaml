@@ -86,6 +86,12 @@ execution:
   # isolation: worktree        # auto-creates git worktree on loop/<name> branch
   # isolation: branch          # auto-creates and checks out loop/<name> branch
   # branch: custom/branch-name # override default branch name
+  publish:
+    push: false
+    mr: false
+    # target_branch: main
+    # title: "Loop: ai-workflow-mapping"
+    # description: ""
   side_effects:
     requires_approval: true
     duplicate_action_check: true

@@ -619,6 +619,41 @@ class Runner:
             self.save_state(status=f"{gate_name}_revision_{revision}", last_review=str(review_path))
             self.append_log("revision", gate=gate_name, revision=revision, artifact=artifact_label)
 
+    def _publish(self, delivery_path: Path) -> None:
+        publish = self.spec.get("execution", {}).get("publish", {})
+        if not publish.get("push") and not publish.get("mr"):
+            return
+        meta = self.spec.get("meta", {})
+        branch = self.spec.get("execution", {}).get(
+            "branch", f"loop/{meta.get('name', 'unnamed')}"
+        )
+        target = publish.get("target_branch", "main")
+        title = publish.get("title", f"Loop: {meta.get('name', 'unnamed')}")
+        description = publish.get("description", "")
+        repo_dir = self._original_base_dir if self._worktree_path else self.base_dir
+        if publish.get("push"):
+            run_argv(["git", "add", "--all"], cwd=repo_dir, timeout_sec=30)
+            run_argv(
+                ["git", "commit", "-m", title, "--allow-empty"],
+                cwd=repo_dir, timeout_sec=30,
+            )
+            run_argv(
+                ["git", "push", "-u", "origin", branch],
+                cwd=repo_dir, timeout_sec=60,
+            )
+            self.append_log("publish_push", branch=branch)
+        if publish.get("mr"):
+            mr_args = [
+                "glab", "mr", "create",
+                "--title", title,
+                "--source-branch", branch,
+                "--target-branch", target,
+            ]
+            if description:
+                mr_args += ["--description", description]
+            run_argv(mr_args, cwd=repo_dir, timeout_sec=30)
+            self.append_log("publish_mr", branch=branch, target=target)
+
     def run(self) -> int:
         try:
             return self._run()
@@ -645,6 +680,7 @@ class Runner:
             if self.run_gate("delivery_gate", delivery_path, delivery_path.name):
                 self.save_state(status="passed", final_delivery=str(delivery_path), completed_at=utc_now())
                 self.append_log("run_passed", final_delivery=str(delivery_path))
+                self._publish(delivery_path)
                 print(f"Looper run passed. Final delivery: {delivery_path}")
                 return 0
 
