@@ -5,3 +5,9 @@ User wants Hermes to integrate with OpenCode sessions, including Telegram notifi
 User wants any future updates to skills, rules, Agent.md, or similar AI-assistant config/docs to be pushed to git@github.com:RaihanParl/ai-skill.git.
 §
 User does not want any GitLab repo touched unless they explicitly say so.
+§
+User wants Caveman, RTK, and Ponytail installed and used in their environment when relevant.
+§
+If I create a new Hermes skill or change global agent/rules docs, mirror and push those config changes to git@github.com:RaihanParl/ai-skill.git.
+§
+User wants Hermes session completion pings that include only the last message's point, so it is clear whether the session is asking for confirmation or has simply completed.
