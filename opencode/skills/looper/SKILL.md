@@ -95,6 +95,18 @@ All scripts live at `$LOOPER_ROOT/scripts/looper.py`. Run with:
 - Render only the in-session handoff:
   `python3 "$LOOPER_ROOT/scripts/looper.py" session-prompt <target>/loop.resolved.json --out <target>/RUN_IN_SESSION.md`
 
+## OpenCode Adaptation Notes
+
+This Looper skill is adapted for OpenCode, not Claude Code.
+
+- Live skill root: `~/.config/opencode/skills/looper`
+- Pair the skill with `~/.config/opencode/commands/looper.md` when the slash command behavior changes.
+- Keep `LOOPER_ROOT` absolute and explicit so the compiler works from any project directory.
+- Python 3.9 compatibility matters. Use `datetime.timezone.utc`, not `datetime.UTC`.
+- After syncing changes, verify with:
+  `python3 "$LOOPER_ROOT/scripts/looper.py" compile <target>/loop.yaml --out <target>/loop.resolved.json --render <target>/LOOP.md --session-prompt <target>/RUN_IN_SESSION.md`
+- If command text and skill text diverge, fix both in the same change set before pushing.
+
 ## Confirmation Flow Preview
 
 Use this shape and customize labels:
