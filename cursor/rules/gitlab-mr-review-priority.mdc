@@ -1,0 +1,33 @@
+---
+description: Route GitLab MR review requests to gitlab-mr-review.mdc before any other PR workflow
+alwaysApply: true
+---
+
+# GitLab MR review takes priority
+
+When **any** of these triggers appear, your **first action** must be:
+
+```bash
+Read ~/.cursor/rules/gitlab-mr-review.mdc
+```
+
+Then follow that file exactly. Do this before any other PR/MR workflow.
+
+**Triggers (any match):**
+- User asks whether GitLab PR/MR rules exist, or references `gitlab-mr-review.mdc`
+- User says **"mr this"** or **"pr this"**
+- Any URL containing `repo.transjakarta.co.id` and `merge_requests`
+- Any URL containing `/-/merge_requests/`
+- User asks to review a GitLab merge request or MR
+
+If asked whether these rules exist, answer **yes** and cite both user-level rule files:
+`~/.cursor/rules/gitlab-mr-review-priority.mdc` and `~/.cursor/rules/gitlab-mr-review.mdc`.
+
+**Overrides (do NOT use instead):**
+- `creating-pull-requests` user rule (`gh pr create`)
+- Bugbot / security-review subagents for MR review
+- Generic git diff summaries without glab fetch + inline comments
+
+**Workspace:** This applies from home, project roots, and cloned worktrees. Path is always `~/.cursor/rules/gitlab-mr-review.mdc`.
+
+**Skip posting comments** only if the user explicitly says e.g. "review only" or "don't comment".

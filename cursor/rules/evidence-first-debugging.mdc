@@ -1,0 +1,17 @@
+---
+description: Evidence-first debugging and validation workflow
+alwaysApply: true
+---
+
+# Evidence-First Debugging
+
+When debugging behavior that involves external systems, hardware, processes, ports, networks, files, or deployed services:
+
+- Do not trust assumptions from docs, defaults, names, or prior code. Verify the actual runtime state first.
+- Validate the whole path end to end: process command, configuration, opened resources, ownership, raw input/output, parser behavior, app logs, and user-visible result.
+- When the app logs nothing, step below the app. Use raw probes, traces, monitors, minimal scripts, or direct device/process inspection to prove whether data reaches the machine.
+- Treat the user's practical test ideas as important hypotheses, especially when they suggest observing the real system directly. Prefer running the smallest direct test that can prove or disprove the idea.
+- Reproduce locally with a focused simulation or harness before changing production behavior. Include edge cases discovered from raw evidence, such as missing terminators, bursty input, repeated payloads, partial reads, or wrong ports.
+- After a fix, verify in layers: local simulation, build/lints, deploy/startup, live logs, then the user's real action.
+- If a command exits oddly after useful output, inspect the output before declaring failure. Separate deployment/build failure from transport/session disconnects.
+- Summarize the root cause in terms of the false assumption that was replaced by evidence.
