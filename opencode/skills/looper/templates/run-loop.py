@@ -8,11 +8,14 @@ loop.resolved.json and uses only Python stdlib.
 from __future__ import annotations
 
 import argparse
+import atexit
 import datetime as _dt
 import fnmatch
 import json
+import os
 from pathlib import Path
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -144,7 +147,11 @@ class Runner:
     def __init__(self, spec_path: Path) -> None:
         self.spec_path = spec_path.resolve()
         self.base_dir = self.spec_path.parent
+        self._original_base_dir = self.base_dir
+        self._worktree_path: Path | None = None
+        self._cleanup_done = False
         self.spec = load_json(self.spec_path)
+        self._setup_execution_boundary()
         self.workspace = relative_to_base(self.spec["workspace"]["dir"], self.base_dir)
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.observability = self.spec.get("observability", {})
@@ -152,6 +159,79 @@ class Runner:
         self.state_path = self.workspace / self.observability.get("state_file", "state.json")
         self.state = self.load_state()
         self.started = time.monotonic()
+        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        atexit.register(self._teardown_execution_boundary)
+
+    def _signal_handler(self, signum: int, _frame: Any) -> None:
+        self._teardown_execution_boundary()
+        sys.exit(128 + signum)
+
+    def _setup_execution_boundary(self) -> None:
+        isolation = self.spec.get("execution", {}).get("isolation", "current_workspace")
+        if isolation == "current_workspace":
+            return
+        repo_check = run_argv(["git", "rev-parse", "--git-dir"], cwd=self.base_dir, timeout_sec=10)
+        if repo_check.returncode != 0:
+            self.append_log("warning", isolation=isolation, message="Not a git repo, falling back to current_workspace")
+            return
+        meta = self.spec.get("meta", {})
+        branch = self.spec.get("execution", {}).get(
+            "branch", f"loop/{meta.get('name', 'unnamed')}"
+        )
+        if isolation == "branch":
+            branch_check = run_argv(
+                ["git", "rev-parse", "--verify", branch], cwd=self.base_dir, timeout_sec=10
+            )
+            if branch_check.returncode != 0:
+                run_argv(
+                    ["git", "branch", branch], cwd=self.base_dir, timeout_sec=10
+                )
+            run_argv(
+                ["git", "checkout", branch], cwd=self.base_dir, timeout_sec=10
+            )
+            self.append_log("isolation", type="branch", branch=branch)
+        elif isolation == "worktree":
+            name = meta.get("name", "unnamed")
+            worktree_path = self._original_base_dir.parent / f"{name}-worktree"
+            branch_check = run_argv(
+                ["git", "rev-parse", "--verify", branch], cwd=self.base_dir, timeout_sec=10
+            )
+            if branch_check.returncode != 0:
+                run_argv(
+                    ["git", "branch", branch], cwd=self.base_dir, timeout_sec=10
+                )
+            wt_check = run_argv(
+                ["git", "worktree", "list"], cwd=self.base_dir, timeout_sec=10
+            )
+            if str(worktree_path) in wt_check.stdout:
+                run_argv(
+                    ["git", "worktree", "remove", "--force", str(worktree_path)],
+                    cwd=self._original_base_dir, timeout_sec=10
+                )
+            run_argv(
+                ["git", "worktree", "add", str(worktree_path), branch],
+                cwd=self.base_dir, timeout_sec=10
+            )
+            self._worktree_path = worktree_path
+            self.base_dir = worktree_path.resolve()
+            self.append_log(
+                "isolation", type="worktree", branch=branch, path=str(worktree_path)
+            )
+
+    def _teardown_execution_boundary(self) -> None:
+        if self._cleanup_done:
+            return
+        self._cleanup_done = True
+        if self._worktree_path and self._worktree_path.exists():
+            try:
+                run_argv(
+                    ["git", "worktree", "remove", "--force", str(self._worktree_path)],
+                    cwd=self._original_base_dir, timeout_sec=10
+                )
+            except Exception:
+                pass
+            self._worktree_path = None
 
     def load_state(self) -> dict[str, Any]:
         if self.state_path.exists():
@@ -540,6 +620,12 @@ class Runner:
             self.append_log("revision", gate=gate_name, revision=revision, artifact=artifact_label)
 
     def run(self) -> int:
+        try:
+            return self._run()
+        finally:
+            self._teardown_execution_boundary()
+
+    def _run(self) -> int:
         self.save_state(status="running")
         self.append_log("run_start", spec=str(self.spec_path))
         self.gather_context()
