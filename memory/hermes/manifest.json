@@ -1,0 +1,15 @@
+{
+  "synced_at_utc": "2026-06-24T07:42:35.697674+00:00",
+  "repo_root": "/Users/mraihanparlaungan/ai-skill",
+  "source_dir": "/Users/mraihanparlaungan/.hermes/memories",
+  "files": [
+    {
+      "source": "/Users/mraihanparlaungan/.hermes/memories/USER.md",
+      "target": "/Users/mraihanparlaungan/ai-skill/memory/hermes/USER.md"
+    },
+    {
+      "source": "/Users/mraihanparlaungan/.hermes/memories/MEMORY.md",
+      "target": "/Users/mraihanparlaungan/ai-skill/memory/hermes/MEMORY.md"
+    }
+  ]
+}

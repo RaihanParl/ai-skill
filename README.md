@@ -9,3 +9,5 @@ Current contents:
 - Hermes OpenCode monitor script
 - Cursor rule files used by the local assistant setup
 - OpenCode local assistant configs: AGENTS.md, agents, commands, skills, and opencode.jsonc
+- Hermes memory snapshots mirrored from ~/.hermes/memories
+- A sync script to publish Hermes memory updates into this repo
