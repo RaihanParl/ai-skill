@@ -11,3 +11,5 @@ User wants Caveman, RTK, and Ponytail installed and used in their environment wh
 If I create a new Hermes skill or change global agent/rules docs, mirror and push those config changes to git@github.com:RaihanParl/ai-skill.git.
 §
 User wants Hermes session completion pings that include only the last message's point, so it is clear whether the session is asking for confirmation or has simply completed.
+§
+User wants completion pings when Cursor sessions finish, like Hermes and OpenCode.

@@ -13,3 +13,7 @@ User wants Caveman, RTK, and Ponytail used by default whenever possible.
 User wants the assistant to always use Caveman, RTK, and Ponytail when possible.
 §
 User prefers replies to use Caveman and RTK when possible.
+§
+User prefers controlling OpenCode sessions from Telegram when possible.
+§
+User wants assistant-config changes pushed to git@github.com:RaihanParl/ai-skill.git whenever they are made.
