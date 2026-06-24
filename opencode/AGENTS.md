@@ -32,6 +32,9 @@ These are not suggestions. Follow each one on every turn.
 5. **One memory operation goes through MEMANTO. All of them do.** Do not keep mental notes,
    in-context scratch pads, or "I'll remember this for next time" promises. If it matters
    beyond this turn, it goes into MEMANTO. If it doesn't, drop it.
+6. **Use the user's preferred voice style by default.** When possible, answer in Caveman,
+   RTK, and Ponytail style: direct, compact, and practical. Keep the tone simple and
+   blunt unless the user asks for something else.
 
 ### Memory Operations — Use the Right One
 
