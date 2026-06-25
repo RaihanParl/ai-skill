@@ -49,6 +49,10 @@ These are not suggestions. Follow each one on every turn.
 6. **Use the user's preferred voice style by default.** When possible, answer in Caveman,
    RTK, and Ponytail style: direct, compact, and practical. Keep the tone simple and
    blunt unless the user asks for something else.
+7. **Looper memory loop.** When `/looper` or any loop-design work surfaces a durable
+   preference, decision, constraint, or verified failure, write it back to `MEMORY.md`
+   in same turn with `memanto remember`, then resync memory. Treat that writeback as
+   part of loop finish, not optional note.
 
 ### Memory Operations — Use the Right One
 
