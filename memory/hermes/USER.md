@@ -21,3 +21,5 @@ User wants assistant-config changes pushed to git@github.com:RaihanParl/ai-skill
 User wants coding tasks planned with GPT-5.4 and executed with OpenCode Zen DeepSeek V4 Flash.
 §
 User wants OpenCode /looper to persist durable learnings back to MEMORY.md/user memory so future runs improve.
+§
+User wants coding tasks handled through OpenCode, with GPT-5.4 for planning and OpenCode Zen DeepSeek V4 Flash for execution.
