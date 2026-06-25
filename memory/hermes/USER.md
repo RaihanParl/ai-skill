@@ -17,3 +17,5 @@ User prefers replies to use Caveman and RTK when possible.
 User prefers controlling OpenCode sessions from Telegram when possible.
 §
 User wants assistant-config changes pushed to git@github.com:RaihanParl/ai-skill.git whenever they are made.
+§
+User wants coding tasks planned with GPT-5.4 and executed with OpenCode Zen DeepSeek V4 Flash.
