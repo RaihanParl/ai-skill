@@ -11,8 +11,5 @@
         "grafana_*": true
       }
     }
-  },
-  "plugin": [
-    "@dietrichgebert/ponytail"
-  ]
+  }
 }

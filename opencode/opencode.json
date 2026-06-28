@@ -1,8 +1,230 @@
 {
+  "$schema": "https://opencode.ai/config.json",
   "instructions": [
     "AGENTS.md"
   ],
   "plugin": [
-    "./plugins/caveman/plugin.js"
-  ]
+    "./plugins/caveman/plugin.js",
+    "cursor-acp"
+  ],
+  "mcp": {
+    "atlassian": {
+      "type": "remote",
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "enabled": true,
+      "oauth": {
+        "scope": "read:jira:user-story read:jira-work write:jira-work read:confluence-space.summary read:confluence-content.summary read:confluence-content.all read:compass read:confluence-props read:confluence-content read:confluence-space read:confluence-content.permission read:jira:issue read:jira:project read:jira:user read:jira-sprint read:jira:board read:jira:issue-meta read:jira:issue-detail:remote-link read:jira:issue-detail:description read:jira:issue-detail:status read:jira:issue-detail:comment read:jira:issue-detail:attachment read:jira:issue-detail:vote read:jira:issue-detail:watcher read:jira:issue-detail:worklog read:jira:issue-detail:label read:jira:issue-detail:link read:jira:issue-detail:transition read:jira:issue-detail:assignee"
+      }
+    },
+    "figma": {
+      "type": "remote",
+      "url": "https://mcp.figma.com/mcp"
+    }
+  },
+  "provider": {
+    "opencode": {
+      "name": "OpenCode Zen",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://opencode.ai/zen/v1"
+      },
+      "models": {
+        "deepseek-v4-flash-free": {
+          "name": "DeepSeek V4 Flash Free"
+        },
+        "mimo-v2.5-free": {
+          "name": "MiMo V2.5 Free"
+        }
+      }
+    },
+    "cursor-acp": {
+      "name": "Cursor",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:32124/v1"
+      },
+      "models": {
+        "auto": {
+          "name": "Auto",
+          "cost": {
+            "input": 1.25,
+            "output": 6,
+            "cache_read": 0.25,
+            "cache_write": 1.25
+          }
+        },
+        "composer-1.5": {
+          "name": "Composer 1.5",
+          "cost": {
+            "input": 3.5,
+            "output": 17.5,
+            "cache_read": 0.35,
+            "cache_write": 3.5
+          }
+        },
+        "composer-1": {
+          "name": "Composer 1"
+        },
+        "opus-4.6": {
+          "name": "Claude 4.6 Opus",
+          "options": {
+            "cursorModel": "opus-4.6"
+          },
+          "variants": {
+            "thinking": {
+              "cursorModel": "opus-4.6-thinking"
+            }
+          }
+        },
+        "sonnet-4.6": {
+          "name": "Claude 4.6 Sonnet",
+          "options": {
+            "cursorModel": "sonnet-4.6"
+          },
+          "variants": {
+            "thinking": {
+              "cursorModel": "sonnet-4.6-thinking"
+            }
+          }
+        },
+        "opus-4.5": {
+          "name": "Claude 4.5 Opus",
+          "options": {
+            "cursorModel": "opus-4.5"
+          },
+          "variants": {
+            "thinking": {
+              "cursorModel": "opus-4.5-thinking"
+            }
+          }
+        },
+        "sonnet-4.5": {
+          "name": "Claude 4.5 Sonnet",
+          "options": {
+            "cursorModel": "sonnet-4.5"
+          },
+          "variants": {
+            "thinking": {
+              "cursorModel": "sonnet-4.5-thinking"
+            }
+          }
+        },
+        "gpt-5.3-codex": {
+          "name": "GPT-5.3 Codex",
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cache_read": 0.175,
+            "cache_write": 1.75
+          }
+        },
+        "gpt-5.2": {
+          "name": "GPT-5.2",
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cache_read": 0.175,
+            "cache_write": 1.75
+          }
+        },
+        "gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro",
+          "cost": {
+            "input": 2,
+            "output": 12,
+            "cache_read": 0.2,
+            "cache_write": 2,
+            "context_over_200k": {
+              "input": 4,
+              "output": 18,
+              "cache_read": 0.4,
+              "cache_write": 4
+            }
+          }
+        },
+        "grok": {
+          "name": "Grok"
+        },
+        "kimi-k2.5": {
+          "name": "Kimi K2.5",
+          "cost": {
+            "input": 0.6,
+            "output": 3,
+            "cache_read": 0.1,
+            "cache_write": 0.6
+          }
+        },
+        "gpt-5.4": {
+          "name": "GPT 5.4",
+          "options": {
+            "cursorModel": "gpt-5.4-medium"
+          },
+          "variants": {
+            "medium": {
+              "cursorModel": "gpt-5.4-medium",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.4-high",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            }
+          },
+          "cost": {
+            "input": 2.5,
+            "output": 15,
+            "cache_read": 0.25,
+            "cache_write": 2.5,
+            "context_over_200k": {
+              "input": 5,
+              "output": 22.5,
+              "cache_read": 0.5,
+              "cache_write": 5
+            }
+          }
+        },
+        "gemini-3": {
+          "name": "Gemini 3",
+          "options": {
+            "cursorModel": "gemini-3-pro"
+          },
+          "variants": {
+            "flash": {
+              "cursorModel": "gemini-3-flash",
+              "cost": {
+                "input": 0.5,
+                "output": 3,
+                "cache_read": 0.05,
+                "cache_write": 0.5
+              }
+            },
+            "pro": {
+              "cursorModel": "gemini-3-pro"
+            }
+          }
+        }
+      }
+    }
+  }
 }
