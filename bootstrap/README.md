@@ -1,20 +1,35 @@
 # Bootstrap AI stack
 
-This folder contains a rerunnable shell bootstrap for a new machine.
+This folder contains rerunnable workflows for a new machine and for cloning this machine as closely as possible.
 
 Main script:
 - `bootstrap/bootstrap_ai_stack.sh`
 
-What it does:
-- installs core packages needed by this setup (`git`, `tmux`, `python`, `node`)
-- installs Hermes Agent
-- installs OpenCode
-- installs GitNexus
-- runs `gitnexus setup`
-- copies repo-managed OpenCode and Hermes helper files into your home directory
-- writes Telegram and provider secrets into `~/.hermes/.env`
-- installs and starts the Hermes gateway service
-- recreates the recurring cron jobs used by this setup
+Exact-machine export / restore:
+- `bootstrap/export_hermes_stack.sh`
+- `bootstrap/restore_hermes_stack.sh`
+
+What the bootstrap installs:
+- core packages needed by this setup (`git`, `tmux`, `python`, `node`)
+- Hermes Agent
+- OpenCode
+- GitNexus
+- `gitnexus setup`
+- repo-managed OpenCode and Hermes helper files into home directory
+- Telegram and provider secrets into `~/.hermes/.env`
+- Hermes gateway service
+- recurring cron jobs used by this setup
+
+What the export bundle captures:
+- `~/.hermes/config.yaml`
+- `~/.hermes/memories/`
+- `~/.hermes/profiles/`
+- `~/.hermes/skills/`
+- `~/.hermes/plugins/`
+- `~/.hermes/scripts/`
+- `~/.config/opencode/`
+- optional: `~/.hermes/sessions/` and `~/.hermes/state.db`
+- optional: `~/.hermes/.env` and `~/.hermes/auth.json`
 
 Expected usage on a new machine:
 
@@ -24,7 +39,19 @@ cd ~/ai-skill
 bash bootstrap/bootstrap_ai_stack.sh
 ```
 
-Non-interactive example:
+Clone this machine into a bundle:
+
+```bash
+bash bootstrap/export_hermes_stack.sh ~/Desktop/hermes-stack.tar.gz
+```
+
+Restore bundle on new machine:
+
+```bash
+bash bootstrap/restore_hermes_stack.sh ~/Desktop/hermes-stack.tar.gz
+```
+
+Non-interactive bootstrap example:
 
 ```bash
 TELEGRAM_BOT_TOKEN='123:abc' \
@@ -38,6 +65,8 @@ Dry-run validation:
 
 ```bash
 DRY_RUN=1 NONINTERACTIVE=1 bash bootstrap/bootstrap_ai_stack.sh
+DRY_RUN=1 bash bootstrap/export_hermes_stack.sh /tmp/hermes-stack.tar.gz
+DRY_RUN=1 bash bootstrap/restore_hermes_stack.sh /tmp/hermes-stack.tar.gz
 ```
 
 Useful toggles:
@@ -48,28 +77,16 @@ Useful toggles:
 - `SETUP_TELEGRAM=0` skip Telegram prompts and `.env` updates
 - `INSTALL_GATEWAY_SERVICE=0` do not install/start Hermes gateway service
 - `SETUP_CRON_JOBS=0` do not create cron jobs
-- `ENABLE_OPENCODE_MONITOR_CRON=0` do not create the OpenCode Telegram monitor
-- `ENABLE_HERMES_SESSION_MONITOR_CRON=0` do not create the Hermes session completion Telegram monitor
 - `AUTO_RUN_HERMES_MODEL=1` launch `hermes model` during bootstrap
 - `AUTO_RUN_HERMES_GATEWAY_SETUP=1` launch `hermes gateway setup` during bootstrap
-
-Files synced into the new machine:
-- `~/.config/opencode/opencode.jsonc`
-- `~/.hermes/scripts/opencode_telegram_bridge.py`
-- `~/.hermes/scripts/opencode_telegram_bridge_tick.sh`
-- `~/.hermes/scripts/opencode_bridge_launch.sh`
-- `~/.hermes/scripts/opencode_monitor.py`
-- `~/.hermes/scripts/hermes_session_monitor.py`
-- `~/.hermes/scripts/sync_memory_to_ai_skill.py`
-
-Cron jobs it recreates:
-- `opencode-telegram-bridge`
-- `opencode-telegram-monitor`
-- `hermes-session-monitor`
-- `sync-hermes-memory-to-ai-skill`
+- `INCLUDE_SECRETS=1` include `.env` and `auth.json` in export bundle
+- `INCLUDE_SESSIONS=1` include `sessions/` and `state.db` in export bundle
+- `INCLUDE_OPENCODE_CACHE=0` skip `opencode.json` if you only want source config
+- `FORCE=1` allow restore to overwrite existing destination files
 
 Notes:
 - The script is optimized for macOS because that is the current primary environment.
 - Linux is best-effort for `apt-get` and `dnf` systems.
 - It does not log you into OpenCode providers automatically. After bootstrap, run `opencode providers login`.
 - If you do not pass provider API keys, run `hermes model` after installation.
+- Export bundles can contain secrets if you ask for them. Treat them like private backups.
