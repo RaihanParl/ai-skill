@@ -48,6 +48,8 @@ Useful toggles:
 - `SETUP_TELEGRAM=0` skip Telegram prompts and `.env` updates
 - `INSTALL_GATEWAY_SERVICE=0` do not install/start Hermes gateway service
 - `SETUP_CRON_JOBS=0` do not create cron jobs
+- `ENABLE_OPENCODE_MONITOR_CRON=0` do not create the OpenCode Telegram monitor
+- `ENABLE_HERMES_SESSION_MONITOR_CRON=0` do not create the Hermes session completion Telegram monitor
 - `AUTO_RUN_HERMES_MODEL=1` launch `hermes model` during bootstrap
 - `AUTO_RUN_HERMES_GATEWAY_SETUP=1` launch `hermes gateway setup` during bootstrap
 
@@ -57,11 +59,13 @@ Files synced into the new machine:
 - `~/.hermes/scripts/opencode_telegram_bridge_tick.sh`
 - `~/.hermes/scripts/opencode_bridge_launch.sh`
 - `~/.hermes/scripts/opencode_monitor.py`
+- `~/.hermes/scripts/hermes_session_monitor.py`
 - `~/.hermes/scripts/sync_memory_to_ai_skill.py`
 
 Cron jobs it recreates:
 - `opencode-telegram-bridge`
 - `opencode-telegram-monitor`
+- `hermes-session-monitor`
 - `sync-hermes-memory-to-ai-skill`
 
 Notes:
