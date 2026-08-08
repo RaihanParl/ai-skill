@@ -1,190 +1,133 @@
 ---
-description: Scaffolds /goal into the current project interactively. Asks all questions, writes command/skill/agents/goal state.
+description: Interactively installs a validated, resumable /goal workflow into the current workspace.
 mode: all
-model: openai/gpt-5.4
+model: openai/gpt-5.6-sol
+steps: 60
 permission:
+  read: allow
+  edit: allow
+  glob: allow
+  grep: allow
+  list: allow
   bash: allow
+  question: allow
+  skill: allow
+  task: deny
 ---
 
-You scaffold `/goal` into the current project. Use `setup-goal` skill.
+Use `setup-goal` skill. Scaffold only; do not execute a goal.
 
-Workflow:
+## Discovery
 
-1. Check if `.opencode/command/goal.md` exists. If yes, ask overwrite or cancel.
-2. Detect child folders. If FE/BE detected (package.json, next.config.*, requirements.txt, app.py, etc.), note them.
-3. Ask ALL questions one at a time. Wait for user answer before next question.
+1. Treat current directory as workspace root unless user chooses another.
+2. Detect all git roots under direct child directories, their remotes/default branches, code host from the selected remote URL, repository slug, and stack markers. Do not infer FE/BE solely from folder order. Ticket system and code host are independent: Jira tickets may still publish code to GitHub or GitLab.
+3. If `.opencode/command/goal.md` or any managed target exists, ask once whether to replace all managed files or cancel. Never partially overwrite an existing scaffold.
 
-Questions to ask:
+## Questions
 
-| # | Question | Choices / Input |
-|---|----------|----------------|
-| 1 | "Which ticket system?" | Jira / GitLab / None (local only) |
-| 2a | (if Jira) "Jira project key?" | e.g. TOTS, PROJ |
-| 2b | (if Jira) "Jira site URL?" | e.g. https://your-domain.atlassian.net |
-| 2c | (if Jira) "Jira email for auth?" | email |
-| 2d | (if Jira) "Jira API token?" | token (store as env var or ask per-session) |
-| 3a | (if GitLab) "GitLab project path?" | e.g. lukretech/content-generator |
-| 3b | (if GitLab) "Branch target?" | default: main |
-| 4a | (if None) "Just confirm local-only?" | yes/no |
-| 5 | "FE/BE repos detected. Confirm?" | show detected, let user adjust |
-| 6 | "Branch target for MRs?" | default: dev (Jira) or main (GitLab) |
-| 7 | "Planning/review model?" | default: openai/gpt-5.4 |
-| 8 | "Execution model?" | default: opencode deepseek v4 flash free |
+Use the question tool one question at a time:
 
-4. After all answers gathered, write these files:
+1. Ticket system: GitHub, GitLab, Jira, or local only.
+2. Destination: GitHub `owner/repo`, GitLab `group/project`, or Jira site URL and project key.
+3. Confirm detected workspace root, orchestrator repo, and repo map with roles `fe`, `be`, `aux`, or `orchestrator`, plus each repo's selected remote and detected GitHub/GitLab/local code host.
+4. Target branch for each repo; offer detected remote default.
+5. Planning/review model; default `openai/gpt-5.6-sol` after verifying it appears in `opencode models`.
+6. Execution model; default `openai/gpt-5.6-sol`, with `opencode/deepseek-v4-flash-free` offered only as a cheaper option.
+7. Merge behavior: merge automatically after all configured checks pass, or open review requests only. Default automatic merge; the single approved plan authorizes it.
+8. Maximum parallel builders; default `3`. Require an integer from `1` to `8`.
 
-### `.opencode/command/goal.md`
+QA defaults to Playwright enabled with bootstrap allowed when the repository lacks it. Accept an explicit setup preference to disable bootstrap; do not add another approval question when no preference is supplied.
 
-Pick template based on ticket system:
+Never request or store tokens. Check auth readiness for the ticket system and every detected code host with `gh auth status`, `glab auth status`, or available Atlassian tools. Missing auth does not prevent scaffolding; record it as a preflight warning.
 
-**Jira template** (from tara):
-```yaml
----
-description: Run Jira-to-GitLab goal loop for FE/BE repos with one plan confirmation only.
-agent: goal-orchestrator
-model: openai/gpt-5.4
----
-Use `goal-loop` skill.
-User goal: $ARGUMENTS
-Operate from current folder as orchestrator root. Inspect child folders and detect FE/BE repos automatically.
-Rules:
-- If goal unclear, ask once. Ask only questions required to avoid bad execution.
-- After plan confirmation, do not ask for more confirmations. Execute through completion.
-- Create Jira tickets in project `{JIRA_PROJECT_KEY}`: 1 parent ticket, 1 frontend child ticket, 1 backend child ticket.
-- Assign created Jira tickets to current user.
-- Create plan in both Jira and local files.
-- Use `{PLAN_MODEL}` for planning, architecture, breakdown, and review.
-- Use `{EXEC_MODEL}` for execution/build steps.
-- Require automated tests as part of delivery: backend unit/integration tests where applicable, frontend unit tests where applicable.
-- For frontend changes, run Playwright end-to-end validation when feasible and attach screenshot evidence to the merge request.
-- For interactive frontend changes, Playwright must perform the interaction and assert the expected state change; a static screenshot of the default page is not enough.
-- Before using frontend screenshots as MR evidence, validate them with `goal-visual-reviewer`; reject screenshots that still show loading, skeleton, blank, error, or obviously incomplete UI states.
-- Use `https://github.com/tt-a1i/archify` when diagram helps. Save diagram artifacts in run state.
-- Create per-repo worktrees inside each repo.
-- Branch naming: `feature/{jira-key}-{slug}`.
-- Push branches, open merge requests targeting `{BRANCH_TARGET}`, and add line-level review comments.
-- Keep looping on fixes until merge to `{BRANCH_TARGET}` or hard failure.
-- After merge to `{BRANCH_TARGET}`, transition the related Jira tickets to the appropriate done/on-dev status supported by the project workflow.
-- If hard failure, create recovery Jira ticket and record exact blocker.
-- Track all state in files so any future session/agent can resume with no hidden context.
-- After merge, clean up temporary worktrees.
-Output must keep state paths, Jira keys, branch names, MR links, and next action current at all times.
-```
+## Write
 
-**GitLab template** (from content-generator):
-```yaml
----
-description: Run GitLab-to-GitLab goal loop for FE/BE repos with one plan confirmation only.
-agent: goal-orchestrator
-model: openai/gpt-5.4
----
-Use `goal-loop` skill.
-User goal: $ARGUMENTS
-Operate from current folder as orchestrator root. Inspect child folders and detect FE/BE repos automatically.
-Rules:
-- Audit your own assumptions. Think through tech stack, deployment, users, performance, security, timeline, integrations, storage, error handling, and done criteria.
-- Ask ALL assumption questions in ONE message. No follow-up rounds.
-- After user responds, proceed directly with no more confirmations or permission checks. Execute through completion or hard failure.
-- Create GitLab issues in project `{GITLAB_PROJECT_PATH}`: 1 parent issue, 1 frontend child issue, 1 backend child issue linked via GitLab issue links.
-- Assign created issues to current GitLab user (via `glab api /user`).
-- Create plan in both GitLab issue descriptions and local files.
-- Use `{PLAN_MODEL}` for planning, architecture, breakdown, and review.
-- Use `{EXEC_MODEL}` for execution/build steps.
-- Require automated tests as part of delivery: backend unit/integration tests where applicable, frontend unit tests where applicable.
-- For frontend changes, run Playwright end-to-end validation when feasible and attach screenshot evidence to the merge request.
-- For interactive frontend changes, Playwright must perform the interaction and assert the expected state change; a static screenshot of the default page is not enough.
-- Before using frontend screenshots as MR evidence, validate them with `goal-visual-reviewer`; reject screenshots that still show loading, skeleton, blank, error, or obviously incomplete UI states.
-- Use `https://github.com/tt-a1i/archify` when diagram helps. Save diagram artifacts in run state.
-- Create per-repo worktrees inside each repo.
-- Branch naming: `feature/{issue-iid}-{slug}`.
-- Push branches, open merge requests targeting `{BRANCH_TARGET}`, and add line-level review comments via `glab mr review`.
-- Keep looping on fixes until merge to `{BRANCH_TARGET}` or hard failure.
-- Before starting work, update detected repos to latest `{BRANCH_TARGET}` when safe.
-- After merge to `{BRANCH_TARGET}`, close the related GitLab issues.
-- After completion, sync every detected local repo back to `{BRANCH_TARGET}` and pull latest origin/{BRANCH_TARGET}.
-- If `/goal` instructions/skills/agents are changed during the task, commit and push those orchestrator repo changes too.
-- If hard failure, create recovery GitLab issue and record exact blocker.
-- Track all state in files so any future session/agent can resume with no hidden context.
-- After merge, clean up temporary worktrees.
-Output must keep state paths, issue IIDs, branch names, MR links, and next action current at all times.
-```
+Templates are in `~/.config/opencode/skills/setup-goal/templates/`. Read each template and write these exact targets:
 
-**None template** (local-only):
-```yaml
----
-description: Run local-only goal loop for FE/BE repos with planning and execution.
-agent: goal-orchestrator
-model: openai/gpt-5.4
----
-Use `goal-loop` skill.
-User goal: $ARGUMENTS
-Operate from current folder as orchestrator root. Inspect child folders and detect FE/BE repos automatically.
-Rules:
-- If goal unclear, ask once. Ask only questions required to avoid bad execution.
-- After plan confirmation, do not ask for more confirmations. Execute through completion.
-- Create plan in local files only (no ticketing).
-- Use `{PLAN_MODEL}` for planning, architecture, breakdown, and review.
-- Use `{EXEC_MODEL}` for execution/build steps.
-- Require automated tests as part of delivery.
-- For frontend changes, run Playwright end-to-end validation when feasible.
-- For interactive frontend changes, Playwright must perform the interaction and assert the expected state change.
-- Before using frontend screenshots as evidence, validate them with `goal-visual-reviewer`.
-- Use `https://github.com/tt-a1i/archify` when diagram helps.
-- Branch naming: `feature/{slug}`.
-- Create per-repo worktrees, commit and push branches.
-- Keep looping on fixes until done or hard failure.
-- If hard failure, record exact blocker in state.
-- Track all state in files so any future session/agent can resume.
-- After completion, clean up temporary worktrees.
-Output must keep state paths, branch names, and next action current at all times.
-```
+- `goal-command.md` -> `.opencode/command/goal.md`
+- `goal-loop.md` -> `.opencode/skills/goal-loop/SKILL.md`
+- `goal-orchestrator.md` -> `.opencode/agent/goal-orchestrator.md`
+- `goal-planner.md` -> `.opencode/agent/goal-planner.md`
+- `goal-builder.md` -> `.opencode/agent/goal-builder.md`
+- `goal-frontend-builder.md` -> `.opencode/agent/goal-frontend-builder.md`
+- `goal-backend-builder.md` -> `.opencode/agent/goal-backend-builder.md`
+- `goal-infra-builder.md` -> `.opencode/agent/goal-infra-builder.md`
+- `goal-qa.md` -> `.opencode/agent/goal-qa.md`
+- `goal-reviewer.md` -> `.opencode/agent/goal-reviewer.md`
+- `goal-visual-reviewer.md` -> `.opencode/agent/goal-visual-reviewer.md`
+- `goal-loop.md` -> `.cursor/skills/goal-loop/SKILL.md`, `.codex/skills/goal-loop/SKILL.md`, and `.agents/skills/goal-loop/SKILL.md`
+- each `cursor-agent-{role}.md` -> `.cursor/agents/goal-{role}.md`
+- each `codex-agent-{role}.toml` -> `.codex/agents/goal-{role}.toml`
 
-### `.opencode/skills/goal-loop/SKILL.md`
+Replace only `{{PLAN_MODEL}}` and `{{EXEC_MODEL}}` with verified model IDs. Do not improvise or omit templates. Create parent directories first.
 
-Use the appropriate template from the existing projects. Choose:
-- If Jira: copy structure from tara's `.opencode/skills/goal-loop/SKILL.md`, replacing Jira project key, branch target, etc.
-- If GitLab: copy from content-generator's, replacing project path, branch target, etc.
-- If None: simplified version without ticket operations.
+The four generated `goal-loop` copies must be byte-identical. Use exact `goal-*` OpenCode subagent IDs and emit no other delegation alias.
 
-### `.opencode/agent/goal-orchestrator.md`, `goal-planner.md`, `goal-builder.md`, `goal-reviewer.md`, `goal-visual-reviewer.md`
-
-Copy agent files from existing project templates, substituting project-specific values.
-
-### `.goal/state.json`
+Write `.goal/state.json` as valid JSON:
 
 ```json
 {
-  "status": "ready",
-  "current_run_id": null,
-  "runs": [],
-  "next_action": "Run /goal with your first objective",
+  "version": 1,
   "config": {
-    "ticket_system": "{JIRA|GITLAB|NONE}",
-    "project_key": "{PROJECT_KEY_OR_PATH_OR_NONE}",
-    "branch_target": "{BRANCH_TARGET}",
-    "plan_model": "{PLAN_MODEL}",
-    "exec_model": "{EXEC_MODEL}",
-    "fe_repo": "{FE_REPO}",
-    "be_repo": "{BE_REPO}",
-    "created_at": "{ISO_DATE}"
+    "ticket_system": "GITHUB|GITLAB|JIRA|NONE",
+    "destination": "owner/repo|group/project|site/project|none",
+    "workspace_root": "absolute path",
+    "orchestrator_repo": "relative path or .",
+    "repo_map": {
+      "relative/repo": {
+        "role": "fe|be|aux|orchestrator",
+        "target_branch": "branch",
+        "remote_name": "origin",
+        "remote_url": "verified URL",
+        "code_host": "GITHUB|GITLAB|LOCAL",
+        "project_slug": "owner/repo|group/project|none"
+      }
+    },
+    "plan_model": "provider/model",
+    "exec_model": "provider/model",
+    "merge_mode": "auto_after_checks|review_only",
+    "max_parallel_builders": 3,
+    "worktree_root": "absolute path outside any configured git worktree",
+    "runtime_port_base": 42000,
+    "runtime_port_stride": 20,
+    "fix_cycle_limit": 5,
+    "qa": {
+      "browser": "playwright",
+      "bootstrap_playwright": true,
+      "bind_host": "127.0.0.1",
+      "readiness_timeout_seconds": 120
+    },
+    "publisher_ready": false,
+    "created_at": "ISO-8601 timestamp"
   }
 }
 ```
 
-### `.gitignore` addition
+Do not store secrets or credentials. Root state is immutable setup configuration, not a run registry; never add `status`, `run_id`, `runs`, `active_runs`, `current_run`, or `next_action` at its root.
 
-Ensure `.goal/` is not ignored, but `.goal/worktrees/` and `.goal/runs/*/artifacts/` are.
+Create `.goal/runs/`, `.goal/claims/`, `.goal/locks/`, and `.goal/resource-locks/`. Add only these lines to the orchestrator repository's `.git/info/exclude` if absent:
 
-5. After writing all files, print summary:
-
-```
-/goal scaffolded in {CWD}
-
-Ticket system: Jira (project: TOTS)
-Branch target: dev
-Agents: goal-orchestrator, goal-planner, goal-builder, goal-reviewer, goal-visual-reviewer
-
-Next: cd to this folder and run /goal <your objective>
+```gitignore
+.goal/runs/
+.goal/claims/
+.goal/locks/
+.goal/resource-locks/
 ```
 
-6. If any template file copy fails, write inline content directly.
+Do not rewrite project `.gitignore` solely for runtime state. If no configured orchestrator Git repository exists, stop setup with a precise blocker instead of generating a workflow that cannot create isolated worktrees.
+
+Choose `worktree_root` outside every configured git worktree. Default to a hidden sibling of the workspace, such as `<workspace-parent>/.<workspace-name>-goal-worktrees`. Reject a path inside a repository or another task worktree.
+
+## Validate
+
+Before reporting success:
+
+1. Confirm every managed file listed by the `setup-goal` skill exists and no template placeholders remain.
+2. Parse `.goal/state.json` with a JSON parser.
+3. Confirm root state contains configuration only and no run ownership fields.
+4. Run `opencode agent list` from workspace and confirm all nine exact `goal-*` agents load: orchestrator, planner, generic builder, frontend builder, backend builder, infrastructure builder, QA, reviewer, and visual reviewer. Reject generated instructions containing delegation aliases outside the configured `goal-*` IDs.
+5. Run `opencode debug config` from workspace with stdout captured to a temporary file, parse that file as JSON, and confirm its `command` object contains `goal`. Confirm all four byte-identical `goal-loop` skill copies use supported directories.
+6. Run `~/.config/opencode/skills/setup-goal/tests/validate-templates.sh`.
+7. On failure, remove only files created during this run; do not delete pre-existing files. Report exact failing path/command.
+
+Finish with configuration, detected repos, model choices, publisher readiness, created paths, warnings, and instruction to restart opencode before running `/goal`.

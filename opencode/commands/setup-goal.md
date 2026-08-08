@@ -1,27 +1,11 @@
 ---
-description: Interactively scaffold /goal into the current project. Asks ticket system, project key, branch target, FE/BE detection, and all config needed.
+description: Interactively install and validate a complete /goal workflow in the current workspace.
 agent: setup-goal
-model: openai/gpt-5.4
+model: openai/gpt-5.6-sol
 ---
-
-# /setup-goal
-
-Interactively scaffold a `/goal` loop into the current project.
 
 Use `setup-goal` skill.
 
-User intent:
+Setup preferences: $ARGUMENTS
 
-$ARGUMENTS
-
-Operate from current folder as project root.
-
-Rules:
-- Detect if `.opencode/command/goal.md` already exists. If yes, ask user if they want to overwrite or cancel.
-- Ask ALL questions iteratively — one at a time — don't batch, give user space to think.
-- Ask about: ticket system (Jira/GitLab/none), project key, branch target, FE/BE detection, Jira credentials if needed (URL, email, token), model preferences.
-- Write `.opencode/command/goal.md`, `.opencode/skills/goal-loop/SKILL.md`, `.opencode/agent/goal-*` agents, and `.goal/state.json`.
-- For Jira flow: use same structure as tara's /goal but with user-provided project key.
-- For GitLab flow: use same structure as content-generator's /goal but with user-provided project path.
-- For "none" flow: create a plan-and-execute loop without ticket system.
-- After scaffold, print a summary of what was created and next steps.
+Operate from the current directory. Discover repositories before asking configuration questions. Ask one setup question at a time. Install only from the setup-goal skill templates, validate every generated component, and never request or store credentials. Generated `/goal` runs use one plan approval only, review integrated changes before full repository tests and QA, then continue autonomously within approved scope.
