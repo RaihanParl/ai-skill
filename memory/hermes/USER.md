@@ -1,6 +1,6 @@
 User wants browser/UI work validated with Playwright by default in Cursor across new projects.
 §
-User wants to be told when an OpenCode session asks them for something, especially whether the latest session included a question/request directed at them.
+OpenCode status: count active work only from live tmux plus fresh logs; flag user asks.
 §
 User prefers agent observability/session dashboards to have a TUI-like visual style rather than a polished web-app/card UI.
 §
