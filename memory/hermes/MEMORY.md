@@ -13,3 +13,5 @@ If I create a new Hermes skill or change global agent/rules docs, mirror and pus
 User wants Hermes session completion pings that include only the last message's point, so it is clear whether the session is asking for confirmation or has simply completed.
 §
 User wants completion pings when Cursor sessions finish, like Hermes and OpenCode.
+§
+User expects Argus PR workflow to keep `/review` read-only and require explicit authorization for `/post-review` GitHub publication; verify current live PR head and exact-head evidence before publishing.
