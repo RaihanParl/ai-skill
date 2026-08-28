@@ -10,16 +10,12 @@ User wants a reusable shell bootstrap in ai-skill for setting up a new device wi
 §
 User wants Caveman, RTK, and Ponytail used by default whenever possible.
 §
-User wants the assistant to always use Caveman, RTK, and Ponytail when possible.
-§
 User prefers replies to use Caveman and RTK when possible.
 §
 User prefers controlling OpenCode sessions from Telegram when possible.
 §
 User wants assistant-config changes pushed to git@github.com:RaihanParl/ai-skill.git whenever they are made.
 §
-User wants coding tasks planned with GPT-5.4 and executed with OpenCode Zen DeepSeek V4 Flash.
+User wants coding tasks planned with GPT-5.4 and executed through OpenCode Zen DeepSeek V4 Flash; OpenCode /looper should persist durable learnings to memory.
 §
-User wants OpenCode /looper to persist durable learnings back to MEMORY.md/user memory so future runs improve.
-§
-User wants coding tasks handled through OpenCode, with GPT-5.4 for planning and OpenCode Zen DeepSeek V4 Flash for execution.
+User wants Argus cron to review all open PRs except PRs authored by RaihanParl, publish validated results via /post-review, avoid duplicate same-head blocked reviews, and retry when PR becomes reviewable or gets new head.
