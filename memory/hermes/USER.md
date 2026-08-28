@@ -19,3 +19,5 @@ User wants assistant-config changes pushed to git@github.com:RaihanParl/ai-skill
 User wants coding tasks planned with GPT-5.4 and executed through OpenCode Zen DeepSeek V4 Flash; OpenCode /looper should persist durable learnings to memory.
 §
 User wants Argus cron to review all open PRs except PRs authored by RaihanParl, publish validated results via /post-review, avoid duplicate same-head blocked reviews, and retry when PR becomes reviewable or gets new head.
+§
+User prefers simple prose summaries instead of tables when explicitly asking for a simple message.
