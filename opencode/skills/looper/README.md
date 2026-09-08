@@ -116,10 +116,8 @@ Before running a loop, Looper pushes you to make these explicit:
 - **Feedback**: which programmatic checks, judges, reviewers, or humans decide
   whether work is good enough.
 - **State**: where the loop records status, decisions, blockers, and outputs.
-- **Stop conditions**: success, max iterations, revision caps, no-progress
-  signals, and budget caps. The external runner enforces wall-clock caps;
-  token/USD caps are operator-visible advisory limits unless you add accounting
-  around the configured CLIs.
+- **Stop conditions**: success, max iterations, revision caps, budget caps, and
+  no-progress signals.
 - **Execution boundary**: current workspace, branch/worktree, external runner,
   or a separate durable orchestrator.
 
@@ -171,9 +169,7 @@ Then, in Claude Code:
 ```
 
 Looper interviews you, writes the artifacts into a folder called `looper-output`,
-and shows you an ASCII flow preview to confirm before anything is finalized. The
-installer also creates a private `.venv` inside the skill directory and installs
-`PyYAML`, which the helper compiler needs to read `loop.yaml`. It
+and shows you an ASCII flow preview to confirm before anything is finalized. It
 then offers to run the loop right there in the same Claude Code session.
 
 If you want a different folder name, pass it after `/looper`, for example

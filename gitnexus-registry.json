@@ -1,0 +1,383 @@
+[
+  {
+    "name": "navigo-fe",
+    "path": "/Users/mraihanparlaungan/personal/lukre/travai",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/travai/.gitnexus",
+    "indexedAt": "2026-06-19T09:06:00.731Z",
+    "lastCommit": "dc7a4b1df05c1f2add11b6d09b0c24e38ff5c981",
+    "remoteUrl": "git@gitlab.com:lukretech/navigo-fe",
+    "stats": {
+      "files": 114,
+      "nodes": 978,
+      "edges": 2110,
+      "communities": 44,
+      "processes": 79,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "utech-fe",
+    "path": "/Users/mraihanparlaungan/personal/lukre/utech-fe",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/utech-fe/.gitnexus",
+    "indexedAt": "2026-06-19T09:06:42.470Z",
+    "lastCommit": "5b10bb434a3a5b34e6b40f4125c51f4acbf9e317",
+    "remoteUrl": "git@gitlab.com:lukretech/utech-fe",
+    "stats": {
+      "files": 140,
+      "nodes": 1082,
+      "edges": 2914,
+      "communities": 62,
+      "processes": 86,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "data-test-id-check",
+    "path": "/Users/mraihanparlaungan/Downloads/data-test-id-check",
+    "storagePath": "/Users/mraihanparlaungan/Downloads/data-test-id-check/.gitnexus",
+    "indexedAt": "2026-06-19T09:05:57.529Z",
+    "lastCommit": "",
+    "stats": {
+      "files": 9,
+      "nodes": 83,
+      "edges": 146,
+      "communities": 6,
+      "processes": 9,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "tije-syntra-api-v2",
+    "path": "/Users/mraihanparlaungan/proj/tije-backend",
+    "storagePath": "/Users/mraihanparlaungan/proj/tije-backend/.gitnexus",
+    "indexedAt": "2026-06-19T09:06:22.916Z",
+    "lastCommit": "1adfae302264b561cd5a1a86c4da1f9b2fcdf6b5",
+    "remoteUrl": "git@repo.transjakarta.co.id:smpob/tije-syntra-api-v2",
+    "stats": {
+      "files": 48,
+      "nodes": 318,
+      "edges": 530,
+      "communities": 18,
+      "processes": 9,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "e-office-transjakarta",
+    "path": "/Users/mraihanparlaungan/proj/e-office-transjakarta",
+    "storagePath": "/Users/mraihanparlaungan/proj/e-office-transjakarta/.gitnexus",
+    "indexedAt": "2026-06-19T09:10:40.118Z",
+    "lastCommit": "6583d8e895439d7d21874589fbbcb214caee3865",
+    "remoteUrl": "git@repo.transjakarta.co.id:e-office/e-office-transjakarta",
+    "stats": {
+      "files": 3177,
+      "nodes": 51543,
+      "edges": 249923,
+      "communities": 2611,
+      "processes": 257,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "obu-3.0",
+    "path": "/Users/mraihanparlaungan/proj/obu-3.0",
+    "storagePath": "/Users/mraihanparlaungan/proj/obu-3.0/.gitnexus",
+    "indexedAt": "2026-06-19T09:07:14.022Z",
+    "lastCommit": "2ef43eb578baa9b3fe50a4c52f842c61cebc8f0b",
+    "remoteUrl": "git@repo.transjakarta.co.id:smpob/obu-3.0",
+    "stats": {
+      "files": 228,
+      "nodes": 1922,
+      "edges": 4234,
+      "communities": 90,
+      "processes": 154,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "duitku-backend",
+    "path": "/Users/mraihanparlaungan/personal/lukre/duitku/duitku-backend",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/duitku/duitku-backend/.gitnexus",
+    "indexedAt": "2026-06-19T09:07:10.448Z",
+    "lastCommit": "0d779db5b0c556c13e4b12a796c94ebc2531578b",
+    "remoteUrl": "git@gitlab.com:BachatsaT/duitku-backend",
+    "stats": {
+      "files": 120,
+      "nodes": 2464,
+      "edges": 5200,
+      "communities": 34,
+      "processes": 213,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "duitku-fe",
+    "path": "/Users/mraihanparlaungan/personal/lukre/duitku/duitku-fe",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/duitku/duitku-fe/.gitnexus",
+    "indexedAt": "2026-06-19T09:07:11.375Z",
+    "lastCommit": "9b54e858576309c33c08ec322b9e12c4eae3b36d",
+    "remoteUrl": "git@gitlab.com:BachatsaT/duitku-fe",
+    "stats": {
+      "files": 165,
+      "nodes": 1664,
+      "edges": 4645,
+      "communities": 76,
+      "processes": 136,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "TJGate",
+    "path": "/Users/mraihanparlaungan/proj/gate/TJ_GATE/TJGate",
+    "storagePath": "/Users/mraihanparlaungan/proj/gate/TJ_GATE/TJGate/.gitnexus",
+    "indexedAt": "2026-07-02T03:49:52.579Z",
+    "lastCommit": "",
+    "stats": {
+      "files": 58,
+      "nodes": 2530,
+      "edges": 9486,
+      "communities": 41,
+      "processes": 225,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "tj_gate_c",
+    "path": "/Users/mraihanparlaungan/proj/gate/gate_c",
+    "storagePath": "/Users/mraihanparlaungan/proj/gate/gate_c/.gitnexus",
+    "indexedAt": "2026-07-02T03:58:54.021Z",
+    "lastCommit": "a73f3852eb81dc8a81ddf5097e205384c2088e87",
+    "remoteUrl": "git@repo.transjakarta.co.id:gate/tj_gate_c",
+    "stats": {
+      "files": 68,
+      "nodes": 980,
+      "edges": 2112,
+      "communities": 31,
+      "processes": 83,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "agent-monitor",
+    "path": "/Users/mraihanparlaungan/agent-mirror-dashboard",
+    "storagePath": "/Users/mraihanparlaungan/agent-mirror-dashboard/.gitnexus",
+    "indexedAt": "2026-06-24T15:38:14.503Z",
+    "lastCommit": "f6ecd7bfc8d5aa022076eaca86b926f3134f9cae",
+    "remoteUrl": "git@github.com:RaihanParl/agent-monitor",
+    "stats": {
+      "files": 9,
+      "nodes": 123,
+      "edges": 307,
+      "communities": 8,
+      "processes": 19,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "super-tribble",
+    "path": "/Users/mraihanparlaungan/personal/slotwise-raihanparl",
+    "storagePath": "/Users/mraihanparlaungan/personal/slotwise-raihanparl/.gitnexus",
+    "indexedAt": "2026-07-24T16:01:49.741Z",
+    "lastCommit": "222017c568293b7f43e576972732ff6f623eecf8",
+    "remoteUrl": "git@github.com:RaihanParl/super-tribble",
+    "stats": {
+      "files": 422,
+      "nodes": 2338,
+      "edges": 4414,
+      "communities": 130,
+      "processes": 151,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "qa-ai",
+    "path": "/Users/mraihanparlaungan/personal/qa-ai",
+    "storagePath": "/Users/mraihanparlaungan/personal/qa-ai/.gitnexus",
+    "indexedAt": "2026-06-29T09:10:17.707Z",
+    "lastCommit": "a373c0d0cc2cf5d65fbcedcd0f1e08ab57d8a34a",
+    "remoteUrl": "git@repo.transjakarta.co.id:ai-skills/qa-ai",
+    "stats": {
+      "files": 67,
+      "nodes": 735,
+      "edges": 1183,
+      "communities": 14,
+      "processes": 34,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "tara-chatbot-ui",
+    "path": "/Users/mraihanparlaungan/proj/tara/tara-ui",
+    "storagePath": "/Users/mraihanparlaungan/proj/tara/tara-ui/.gitnexus",
+    "indexedAt": "2026-07-03T02:39:22.224Z",
+    "lastCommit": "9b1f8e1769a8748a2632245656fc596fb081302d",
+    "remoteUrl": "git@repo.transjakarta.co.id:smpob/tara-chatbot-ui",
+    "stats": {
+      "files": 37,
+      "nodes": 273,
+      "edges": 486,
+      "communities": 15,
+      "processes": 14,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "navigo-be",
+    "path": "/Users/mraihanparlaungan/personal/lukre/navigo-revamp/navigo-be",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/navigo-revamp/navigo-be/.gitnexus",
+    "indexedAt": "2026-07-11T14:54:22.265Z",
+    "lastCommit": "54ab77a96305d01dcf7fe190dbeddcd646d18a14",
+    "remoteUrl": "git@gitlab.com:lukretech/navigo-be",
+    "stats": {
+      "files": 93,
+      "nodes": 1406,
+      "edges": 2863,
+      "communities": 51,
+      "processes": 119,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "navigo-fe-revamp",
+    "path": "/Users/mraihanparlaungan/personal/lukre/navigo-revamp/navigo-fe-revamp",
+    "storagePath": "/Users/mraihanparlaungan/personal/lukre/navigo-revamp/navigo-fe-revamp/.gitnexus",
+    "indexedAt": "2026-07-20T10:00:38.251Z",
+    "lastCommit": "4c63809aba16b902632055ac5afa71b16aabe772",
+    "remoteUrl": "git@gitlab.com:lukretech/navigo-fe-revamp",
+    "stats": {
+      "files": 297,
+      "nodes": 2098,
+      "edges": 5994,
+      "communities": 100,
+      "processes": 165,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "direction-planner",
+    "path": "/Users/mraihanparlaungan/proj/direction-planner",
+    "storagePath": "/Users/mraihanparlaungan/proj/direction-planner/.gitnexus",
+    "indexedAt": "2026-07-24T03:12:56.311Z",
+    "lastCommit": "",
+    "stats": {
+      "files": 33,
+      "nodes": 482,
+      "edges": 1208,
+      "communities": 11,
+      "processes": 32,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "super-tribble",
+    "path": "/Users/mraihanparlaungan/personal/.slotwise-raihanparl-goal-worktrees/issue-1-20260724T000000Z/repo/X1-02",
+    "storagePath": "/Users/mraihanparlaungan/personal/.slotwise-raihanparl-goal-worktrees/issue-1-20260724T000000Z/repo/X1-02/.gitnexus",
+    "indexedAt": "2026-07-24T15:49:55.505Z",
+    "lastCommit": "d236abd9dfdd4cc1915cc14a01156f79144c0924",
+    "remoteUrl": "git@github.com:RaihanParl/super-tribble",
+    "stats": {
+      "files": 57,
+      "nodes": 449,
+      "edges": 906,
+      "communities": 29,
+      "processes": 36,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "slotwise-raihanparl-20260725",
+    "path": "/Users/mraihanparlaungan/personal/slotwise-raihanparl-20260725",
+    "storagePath": "/Users/mraihanparlaungan/personal/slotwise-raihanparl-20260725/.gitnexus",
+    "indexedAt": "2026-07-25T03:48:13.134Z",
+    "lastCommit": "008d02efb066a5022b7542879cfc8002165f74da",
+    "remoteUrl": "git@github.com:slotwise-hq/slotwise-raihanparl-20260725",
+    "stats": {
+      "files": 84,
+      "nodes": 837,
+      "edges": 1621,
+      "communities": 59,
+      "processes": 53,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "agent-dev-command-harness",
+    "path": "/Users/mraihanparlaungan/personal/argus/agent-dev-command-harness",
+    "storagePath": "/Users/mraihanparlaungan/personal/argus/agent-dev-command-harness/.gitnexus",
+    "indexedAt": "2026-08-19T08:05:34.706Z",
+    "lastCommit": "68746bd5ec68ca3bdc78287a890c86aa050c5b75",
+    "remoteUrl": "git@github.com:rdeepmath91/agent-dev-command-harness",
+    "stats": {
+      "files": 114,
+      "nodes": 3385,
+      "edges": 8772,
+      "communities": 168,
+      "processes": 241,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "wmsaipoc",
+    "path": "/Users/mraihanparlaungan/personal/argus/wmsaipoc",
+    "storagePath": "/Users/mraihanparlaungan/personal/argus/wmsaipoc/.gitnexus",
+    "indexedAt": "2026-08-30T18:13:33.808Z",
+    "lastCommit": "4c97339362786853b22e5e4313d8d94f26a382a1",
+    "remoteUrl": "git@github.com:letargusdev/wmsaipoc",
+    "stats": {
+      "files": 78,
+      "nodes": 1641,
+      "edges": 3406,
+      "communities": 52,
+      "processes": 142,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "avantrade-entity-service",
+    "path": "/Users/mraihanparlaungan/personal/argus/avantrade-entity-service",
+    "storagePath": "/Users/mraihanparlaungan/personal/argus/avantrade-entity-service/.gitnexus",
+    "indexedAt": "2026-08-18T12:09:42.193Z",
+    "lastCommit": "23b30028ac3248448887c3746c2fc52aeed4da11",
+    "remoteUrl": "https://gitlab.jatis.com/firium/firium-wap-base/avantrade-entity-service",
+    "stats": {
+      "files": 788,
+      "nodes": 12622,
+      "edges": 25619,
+      "communities": 432,
+      "processes": 300,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "avantrade-planning-service",
+    "path": "/Users/mraihanparlaungan/personal/argus/avantrade-planning-service",
+    "storagePath": "/Users/mraihanparlaungan/personal/argus/avantrade-planning-service/.gitnexus",
+    "indexedAt": "2026-08-18T12:10:10.843Z",
+    "lastCommit": "c3e00624a6f74be51a48aaa37f7dfa2976d3ec70",
+    "remoteUrl": "https://gitlab.jatis.com/firium/firium-wap-base/avantrade-planning-service",
+    "stats": {
+      "files": 2095,
+      "nodes": 31210,
+      "edges": 57407,
+      "communities": 493,
+      "processes": 300,
+      "embeddings": 0
+    }
+  },
+  {
+    "name": "wms-frontend-rm-assist",
+    "path": "/Users/mraihanparlaungan/personal/argus/wms-frontend-rm-assist",
+    "storagePath": "/Users/mraihanparlaungan/personal/argus/wms-frontend-rm-assist/.gitnexus",
+    "indexedAt": "2026-08-18T13:51:19.132Z",
+    "lastCommit": "db5dd92094a07bc60bc819d5408ad8f2f44ee21a",
+    "remoteUrl": "https://gitlab.jatis.com/firium/firium-wap-base/wms-frontend-rm-assist",
+    "stats": {
+      "files": 1331,
+      "nodes": 11222,
+      "edges": 23744,
+      "communities": 369,
+      "processes": 300,
+      "embeddings": 0
+    }
+  }
+]

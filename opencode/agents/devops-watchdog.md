@@ -6,17 +6,7 @@ description: >
 mode: primary
 model: anthropic/claude-sonnet-4-20250514
 color: "#ff6b6b"
-permission:
-  edit: allow
-  bash:
-    "*": ask
-    "git *": allow
-    "glab *": allow
-  read: allow
-  webfetch: allow
-  websearch: allow
-  glob: allow
-  grep: allow
+permission: allow
 task:
   "*": deny
   devops-watchdog-*: allow

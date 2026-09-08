@@ -7,15 +7,11 @@ loop.resolved.json and uses only Python stdlib.
 
 from __future__ import annotations
 
-import argparse
-import atexit
 import datetime as _dt
 import fnmatch
 import json
-import os
 from pathlib import Path
 import re
-import signal
 import subprocess
 import sys
 import time
@@ -35,13 +31,8 @@ def utc_now() -> str:
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    try:
-        with path.open("r", encoding="utf-8") as fh:
-            data = json.load(fh)
-    except OSError as exc:
-        raise RunnerError(f"Could not read {path}: {exc}") from exc
-    except json.JSONDecodeError as exc:
-        raise RunnerError(f"Could not parse JSON in {path}: {exc}") from exc
+    with path.open("r", encoding="utf-8") as fh:
+        data = json.load(fh)
     if not isinstance(data, dict):
         raise RunnerError(f"{path} must contain a JSON object")
     return data
@@ -147,11 +138,7 @@ class Runner:
     def __init__(self, spec_path: Path) -> None:
         self.spec_path = spec_path.resolve()
         self.base_dir = self.spec_path.parent
-        self._original_base_dir = self.base_dir
-        self._worktree_path: Path | None = None
-        self._cleanup_done = False
         self.spec = load_json(self.spec_path)
-        self._setup_execution_boundary()
         self.workspace = relative_to_base(self.spec["workspace"]["dir"], self.base_dir)
         self.workspace.mkdir(parents=True, exist_ok=True)
         self.observability = self.spec.get("observability", {})
@@ -159,79 +146,6 @@ class Runner:
         self.state_path = self.workspace / self.observability.get("state_file", "state.json")
         self.state = self.load_state()
         self.started = time.monotonic()
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        atexit.register(self._teardown_execution_boundary)
-
-    def _signal_handler(self, signum: int, _frame: Any) -> None:
-        self._teardown_execution_boundary()
-        sys.exit(128 + signum)
-
-    def _setup_execution_boundary(self) -> None:
-        isolation = self.spec.get("execution", {}).get("isolation", "current_workspace")
-        if isolation == "current_workspace":
-            return
-        repo_check = run_argv(["git", "rev-parse", "--git-dir"], cwd=self.base_dir, timeout_sec=10)
-        if repo_check.returncode != 0:
-            self.append_log("warning", isolation=isolation, message="Not a git repo, falling back to current_workspace")
-            return
-        meta = self.spec.get("meta", {})
-        branch = self.spec.get("execution", {}).get(
-            "branch", f"loop/{meta.get('name', 'unnamed')}"
-        )
-        if isolation == "branch":
-            branch_check = run_argv(
-                ["git", "rev-parse", "--verify", branch], cwd=self.base_dir, timeout_sec=10
-            )
-            if branch_check.returncode != 0:
-                run_argv(
-                    ["git", "branch", branch], cwd=self.base_dir, timeout_sec=10
-                )
-            run_argv(
-                ["git", "checkout", branch], cwd=self.base_dir, timeout_sec=10
-            )
-            self.append_log("isolation", type="branch", branch=branch)
-        elif isolation == "worktree":
-            name = meta.get("name", "unnamed")
-            worktree_path = self._original_base_dir.parent / f"{name}-worktree"
-            branch_check = run_argv(
-                ["git", "rev-parse", "--verify", branch], cwd=self.base_dir, timeout_sec=10
-            )
-            if branch_check.returncode != 0:
-                run_argv(
-                    ["git", "branch", branch], cwd=self.base_dir, timeout_sec=10
-                )
-            wt_check = run_argv(
-                ["git", "worktree", "list"], cwd=self.base_dir, timeout_sec=10
-            )
-            if str(worktree_path) in wt_check.stdout:
-                run_argv(
-                    ["git", "worktree", "remove", "--force", str(worktree_path)],
-                    cwd=self._original_base_dir, timeout_sec=10
-                )
-            run_argv(
-                ["git", "worktree", "add", str(worktree_path), branch],
-                cwd=self.base_dir, timeout_sec=10
-            )
-            self._worktree_path = worktree_path
-            self.base_dir = worktree_path.resolve()
-            self.append_log(
-                "isolation", type="worktree", branch=branch, path=str(worktree_path)
-            )
-
-    def _teardown_execution_boundary(self) -> None:
-        if self._cleanup_done:
-            return
-        self._cleanup_done = True
-        if self._worktree_path and self._worktree_path.exists():
-            try:
-                run_argv(
-                    ["git", "worktree", "remove", "--force", str(self._worktree_path)],
-                    cwd=self._original_base_dir, timeout_sec=10
-                )
-            except Exception:
-                pass
-            self._worktree_path = None
 
     def load_state(self) -> dict[str, Any]:
         if self.state_path.exists():
@@ -310,32 +224,6 @@ class Runner:
             if entry.get("to") == member_id:
                 redactions.extend(entry.get("redact", []))
         return redactions or [".env", ".env.*", "secrets/**", "**/*.key"]
-
-    def redact_prompt_for_member(self, member_id: str, prompt: str) -> str:
-        redactions = self.redactions_for(member_id)
-        redacted = prompt
-        for pattern in redactions:
-            paths = list(self.base_dir.glob(pattern))
-            if pattern.endswith("/**"):
-                root = self.base_dir / pattern[:-3]
-                if root.exists():
-                    paths.extend(root.rglob("*"))
-            for path in paths:
-                if not path.is_file():
-                    continue
-                try:
-                    secret_text = path.read_text(encoding="utf-8")
-                except UnicodeDecodeError:
-                    continue
-                if not secret_text.strip() or len(secret_text) > 1_000_000:
-                    continue
-                marker = f"[redacted:{path.relative_to(self.base_dir).as_posix()}]"
-                redacted = redacted.replace(secret_text, marker)
-                for line in secret_text.splitlines():
-                    stripped = line.strip()
-                    if len(stripped) >= 8:
-                        redacted = redacted.replace(stripped, marker)
-        return redacted
 
     def ensure_consent(self, member_id: str) -> None:
         member = self.member(member_id)
@@ -483,10 +371,7 @@ class Runner:
         self.ensure_consent(member_id)
         output = call_model(
             self.member(member_id),
-            self.redact_prompt_for_member(
-                member_id,
-                self.judge_prompt(gate_name, artifact_label, artifact_text, criteria),
-            ),
+            self.judge_prompt(gate_name, artifact_label, artifact_text, criteria),
             self.base_dir,
         )
         verdict = parse_judge_output(output)
@@ -512,7 +397,6 @@ class Runner:
                 "Do not return a verdict.\n\n"
                 f"Gate: {gate_name}\nArtifact: {artifact_label}\n\n{artifact_text}\n"
             )
-            prompt = self.redact_prompt_for_member(member_id, prompt)
             notes.append(f"## {member_id}\n\n{call_model(member, prompt, self.base_dir)}")
             self.append_log("reviewer_notes", gate=gate_name, member=member_id)
         return notes
@@ -580,12 +464,9 @@ class Runner:
                     failures.extend(verdict.get("blocking_issues") or ["Judge requested revision"])
 
             if policy == "fixed_passes":
-                if failures:
-                    pass
-                elif revision >= max_revisions:
+                if revision >= max_revisions:
                     return True
-                else:
-                    failures.append("fixed_passes reviewer pass")
+                failures.append("fixed_passes reviewer pass")
 
             if not failures:
                 self.save_state(status=f"{gate_name}_passed", **{gate_name: {"passed_at": utc_now()}})
@@ -619,48 +500,7 @@ class Runner:
             self.save_state(status=f"{gate_name}_revision_{revision}", last_review=str(review_path))
             self.append_log("revision", gate=gate_name, revision=revision, artifact=artifact_label)
 
-    def _publish(self, delivery_path: Path) -> None:
-        publish = self.spec.get("execution", {}).get("publish", {})
-        if not publish.get("push") and not publish.get("mr"):
-            return
-        meta = self.spec.get("meta", {})
-        branch = self.spec.get("execution", {}).get(
-            "branch", f"loop/{meta.get('name', 'unnamed')}"
-        )
-        target = publish.get("target_branch", "main")
-        title = publish.get("title", f"Loop: {meta.get('name', 'unnamed')}")
-        description = publish.get("description", "")
-        repo_dir = self._original_base_dir if self._worktree_path else self.base_dir
-        if publish.get("push"):
-            run_argv(["git", "add", "--all"], cwd=repo_dir, timeout_sec=30)
-            run_argv(
-                ["git", "commit", "-m", title, "--allow-empty"],
-                cwd=repo_dir, timeout_sec=30,
-            )
-            run_argv(
-                ["git", "push", "-u", "origin", branch],
-                cwd=repo_dir, timeout_sec=60,
-            )
-            self.append_log("publish_push", branch=branch)
-        if publish.get("mr"):
-            mr_args = [
-                "glab", "mr", "create",
-                "--title", title,
-                "--source-branch", branch,
-                "--target-branch", target,
-            ]
-            if description:
-                mr_args += ["--description", description]
-            run_argv(mr_args, cwd=repo_dir, timeout_sec=30)
-            self.append_log("publish_mr", branch=branch, target=target)
-
     def run(self) -> int:
-        try:
-            return self._run()
-        finally:
-            self._teardown_execution_boundary()
-
-    def _run(self) -> int:
         self.save_state(status="running")
         self.append_log("run_start", spec=str(self.spec_path))
         self.gather_context()
@@ -680,7 +520,6 @@ class Runner:
             if self.run_gate("delivery_gate", delivery_path, delivery_path.name):
                 self.save_state(status="passed", final_delivery=str(delivery_path), completed_at=utc_now())
                 self.append_log("run_passed", final_delivery=str(delivery_path))
-                self._publish(delivery_path)
                 print(f"Looper run passed. Final delivery: {delivery_path}")
                 return 0
 
@@ -690,17 +529,10 @@ class Runner:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Run a compiled Looper loop.")
-    parser.add_argument(
-        "spec_path",
-        nargs="?",
-        type=Path,
-        default=Path(__file__).with_name("loop.resolved.json"),
-        help="Path to loop.resolved.json (defaults to the file next to run-loop.py).",
-    )
-    args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+    argv = list(sys.argv[1:] if argv is None else argv)
+    spec_path = Path(argv[0]) if argv else Path(__file__).with_name("loop.resolved.json")
     try:
-        return Runner(args.spec_path).run()
+        return Runner(spec_path).run()
     except RunnerError as exc:
         print(f"run-loop: error: {exc}", file=sys.stderr)
         return 2

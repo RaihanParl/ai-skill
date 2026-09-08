@@ -1,0 +1,249 @@
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+notify = ["/Users/mraihanparlaungan/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+service_tier = "default"
+model_catalog_json = "/Users/mraihanparlaungan/.codex/opencodex-catalog.json"
+# Auto-injected by opencodex
+openai_base_url = "http://127.0.0.1:10100/v1"
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/mraihanparlaungan/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "/Users/mraihanparlaungan/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_TINYSKY_ENABLED = "0"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.820.60940"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/mraihanparlaungan/.codex/plugins/cache/openai-bundled/browser/26.820.60940/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+
+[features.multi_agent_v2]
+enabled = true
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/Users/mraihanparlaungan/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/Users/mraihanparlaungan/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[features]
+js_repl = false
+
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[mcp_servers.gitnexus]
+command = "/Users/mraihanparlaungan/.nvm/versions/node/v22.20.0/bin/gitnexus"
+args = ["mcp"]
+
+[desktop]
+conversationDetailMode = "STEPS_PROSE"
+ambient-suggestions-enabled = false
+followUpQueueMode = "queue"
+selected-avatar-id = "null-signal"
+avatar-overlay-mascot-width-px = 80
+dock-icon-preference = "codex-system"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-06-17/i-want-to-use-u-on"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-06-19/tell-me-what-the-fuck-are"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-06-28/go"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/slotwise-raihanparl"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-06-28/new-chat"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-06-28/new-chat-2"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/qa-ai"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/proj/gate/TJ_GATE/TJGate"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/lukre/navigo-revamp/navigo-fe-revamp"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-07-20/sites-plugin-sites-openai-bundled-create"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-07-26/we"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-07-27/referenced-chatgpt-conversation-this-is-untrusted"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-07-30/referenced-chatgpt-conversation-this-is-untrusted"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-05/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-05/referenced-chatgpt-conversation-this-is-an-2"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-06/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-07/can"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/sticker-book"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/agent-dev-command-harness"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-10/wha"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-13/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/argus-rm-copilot"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-15/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-18/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-18/referenced-chatgpt-conversation-this-is-an-2"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/wmsaipoc"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Downloads"]
+trust_level = "trusted"
+
+[projects."/private/tmp/argus-419-zkzxJ0"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/wmsaipoc/.agents/local/recursive/harness-470-controller"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/wmsaipoc/.agents/local/recursive/harness-420-controller"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-24/you-x20"]
+trust_level = "trusted"
+
+[projects."/private/tmp"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-27/i-x20"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-08-28/w"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/proj/goodbyeslide"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/coding-agent-usage-dashboard"]
+trust_level = "trusted"
+
+[projects."/private/var/folders/q5/sxqkvsdj3flgfwpxfj4ccydc0000gp/T/tmpowlkl6zg/repo"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/bersamaagent"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/bersamaagent/.worktrees/argus-issue-dbd69bdd8d4d29e9-4"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/bersamaagent/.worktrees/argus-issue-f3f8b53015499fe1b4-5"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal/argus/bersamaagent/.worktrees/argus-issue-007d8af6cbd88336-7"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-09-02/read-thi-chat-https-chatgpt-com"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/Documents/Codex/2026-09-05/why"]
+trust_level = "trusted"
+
+[projects."/Users/mraihanparlaungan/personal"]
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+
+# OpenCode Zen free/keyless models (no API key needed).
+# Use with: codex --profile opencode-free
+# Note: Codex speaks the Responses API only. Of the free models, only
+# muse-spark-1.2-contributor-free is served on /v1/responses; the others
+# (mimo-v2.5-free, hy3-free, ...) are chat-completions-only and won't load here.
+[model_providers.opencode-free]
+name = "OpenCode Zen (free/keyless, via local translator)"
+base_url = "http://127.0.0.1:8731/v1"
+wire_api = "responses"
+requires_openai_auth = false
+# Keyless relay accepts an empty Bearer token.
+experimental_bearer_token = ""
+
+[shell_environment_policy.set]
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "8e86beb821b9afc846211798e0113bd4b9e79312dfcd135eb447bdb154f64071"
+
+[notice]
+fast_default_opt_out = true

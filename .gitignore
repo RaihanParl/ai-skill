@@ -1,0 +1,51 @@
+# Secrets and credentials
+.env
+.env.*
+**/.env
+**/.env.*
+**/auth.json
+**/*token*
+**/*secret*
+**/*credential*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+
+# Local runtime state
+**/*.db
+**/*.sqlite
+**/*.sqlite-*
+**/*.db-*
+**/sessions/
+**/session*
+**/logs/
+**/cache/
+**/caches/
+**/tmp/
+**/.tmp/
+
+# Installed/generated dependencies
+**/node_modules/
+**/.venv/
+**/venv/
+**/__pycache__/
+**/.pytest_cache/
+**/dist/
+**/build/
+**/target/
+
+# Local editor/runtime files
+.DS_Store
+*.swp
+*.swo
+
+**/state/
+**/.curator_backups/
+**/.usage.json
+**/.curator_state
+**/.bundled_manifest
+**/*.tar.gz
+*.png
+*.jpg
+*.jpeg

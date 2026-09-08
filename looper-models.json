@@ -1,0 +1,86 @@
+{
+  "claude": {
+    "authed": false,
+    "available": false,
+    "cli": "claude",
+    "install": "Install and authenticate the Claude CLI.",
+    "invoke": [
+      "claude",
+      "-p"
+    ],
+    "local": false,
+    "path": null,
+    "probe": [
+      "claude",
+      "--version"
+    ],
+    "version": ""
+  },
+  "codex": {
+    "authed": false,
+    "available": false,
+    "cli": "codex",
+    "install": "Install and authenticate the Codex CLI.",
+    "invoke": [
+      "codex",
+      "exec"
+    ],
+    "local": false,
+    "path": null,
+    "probe": [
+      "codex",
+      "--version"
+    ],
+    "version": ""
+  },
+  "gemini": {
+    "authed": false,
+    "available": false,
+    "cli": "gemini",
+    "install": "Install and authenticate the Gemini CLI.",
+    "invoke": [
+      "gemini",
+      "-p"
+    ],
+    "local": false,
+    "path": null,
+    "probe": [
+      "gemini",
+      "--version"
+    ],
+    "version": ""
+  },
+  "llm": {
+    "authed": false,
+    "available": false,
+    "cli": "llm",
+    "install": "Install llm and configure a model/provider.",
+    "invoke": [
+      "llm"
+    ],
+    "local": false,
+    "path": null,
+    "probe": [
+      "llm",
+      "--version"
+    ],
+    "version": ""
+  },
+  "ollama": {
+    "authed": true,
+    "available": true,
+    "cli": "ollama",
+    "install": "Install Ollama and pull a local model.",
+    "invoke": [
+      "ollama",
+      "run"
+    ],
+    "local": true,
+    "path": "/usr/local/bin/ollama",
+    "probe": [
+      "ollama",
+      "--version"
+    ],
+    "version": "ollama version is 0.30.10"
+  }
+}

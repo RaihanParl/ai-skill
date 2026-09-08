@@ -1,0 +1,3 @@
+#!/bin/zsh
+unset GH_TOKEN GITHUB_TOKEN GH_ENTERPRISE_TOKEN
+exec /opt/homebrew/bin/gh "$@"

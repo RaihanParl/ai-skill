@@ -72,8 +72,6 @@ def load_yaml(path: Path) -> dict[str, Any]:
     try:
         with path.open("r", encoding="utf-8") as fh:
             data = yaml.safe_load(fh)
-    except OSError as exc:
-        raise LooperError(f"Could not read {path}: {exc}") from exc
     except yaml.YAMLError as exc:
         raise LooperError(f"Could not parse YAML in {path}: {exc}") from exc
     if not isinstance(data, dict):
@@ -392,7 +390,7 @@ def normalize_spec(spec: dict[str, Any], source_path: Path) -> dict[str, Any]:
 
     resolved = {
         "$schema": "https://github.com/ksimback/looper/schema/loop.resolved.v1.json",
-        "compiled_at": _dt.datetime.now(_dt.timezone.utc).replace(microsecond=0).isoformat(),
+        "compiled_at": _dt.datetime.now(_dt.UTC).replace(microsecond=0).isoformat(),
         "source": str(source_path),
         **spec,
         "criteria_by_id": criteria,

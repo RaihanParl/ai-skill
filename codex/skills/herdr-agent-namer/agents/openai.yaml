@@ -1,0 +1,4 @@
+interface:
+  display_name: "Herdr Agent Namer"
+  short_description: "Name the current Herdr agent by repo and issue"
+  default_prompt: "Use $herdr-agent-namer to name this Herdr agent for the current repository and issue."
