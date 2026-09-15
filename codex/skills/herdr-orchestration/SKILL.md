@@ -65,6 +65,10 @@ Each session finishes only when its deliverable exists plus its evidence: tests 
 
 ## Event-driven supervision
 
+The two pieces below ship as runnable scripts in scripts/:
+- scripts/event_subscriber.py - the reference subscriber (subscribes to pane.agent_status_changed, prints matching events, exits after silence).
+- scripts/pinger_loop.sh - the reference pinger loop (records done/blocked, wakes the orchestrator pane when settled). Configure via env vars ME, WORKERS, SILENCE, LOG, PENDING; launch with setsid nohup scripts/pinger_loop.sh &.
+
 Polling only works while the orchestrator turn is active. For coverage between turns, tap the socket event stream. Two pieces, both record-first. Only the pinger acts, and only by waking the orchestrator pane:
 
 1. Recorder: subscribes to `pane.agent_status_changed` for every worker pane and appends each event to a JSONL queue. This is the lossless record; every orchestrator turn starts by draining it.
