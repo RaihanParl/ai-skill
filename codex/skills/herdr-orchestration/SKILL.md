@@ -65,9 +65,10 @@ Each session finishes only when its deliverable exists plus its evidence: tests 
 
 ## Event-driven supervision
 
-The two pieces below ship as runnable scripts in scripts/:
-- scripts/event_subscriber.py - the reference subscriber (subscribes to pane.agent_status_changed, prints matching events, exits after silence).
-- scripts/pinger_loop.sh - the reference pinger loop (records done/blocked, wakes the orchestrator pane when settled). Configure via env vars ME, WORKERS, SILENCE, LOG, PENDING; launch with setsid nohup scripts/pinger_loop.sh &.
+The two pieces below ship as runnable scripts in scripts/. Both are taken from a working live deployment (the person-orchestration umbrella). They are records-first: the recorder never acts, and only the pinger acts, and only by waking the orchestrator pane.
+- scripts/event_subscriber.py - the reference event subscription (subscribes to pane.agent_status_changed for the given panes, prints matching events as newline JSON, exits after silence). Used by both the recorder and the pinger. Per-pane subscriptions tolerate vanished panes, so one stale pane never kills the whole tap.
+- scripts/events_daemon.sh - the recorder. Subscribes to worker pane state changes AND pane.closed (so dead panes are logged), appends every event to a JSONL queue, and NEVER acts. Auto-reconnects on exit. Run with setsid nohup scripts/events_daemon.sh &.
+- scripts/pinger_loop.sh - the waker. Records done/blocked into a pending queue (deduped against a delivered log so a settled pane is not pinged repeatedly), then prompts the orchestrator pane once it is idle/done. Configure via env vars ME, WORKERS, PANE_MAP, SILENCE, LOG, PENDING, DELIVERED; launch with setsid nohup scripts/pinger_loop.sh &.
 
 Polling only works while the orchestrator turn is active. For coverage between turns, tap the socket event stream. Two pieces, both record-first. Only the pinger acts, and only by waking the orchestrator pane:
 
