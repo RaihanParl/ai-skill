@@ -11,7 +11,14 @@ Run parallel workstreams as visible live agents, not hidden background workers. 
 
 - Check topology first: `herdr pane list`, `herdr tab list`. Max four panes per tab; create new tabs (`herdr tab create --label <name>`) when more capacity is needed.
 - Split with `--no-focus` and an explicit `--cwd` so the user's focus never moves. Parse new pane IDs from the JSON responses.
-- Close only panes the orchestration created.
+
+## Ownership and cleanup
+
+- Treat every pane and tab that existed before this orchestration as user-owned, even when it is idle, blocked, unrelated by directory, or appears to contain completed work.
+- Record every tab and pane ID returned by creation commands. These IDs are the only resources this orchestration may close.
+- Never close a tab merely because its label, repository, cwd, title, or agent status looks irrelevant. A tab may contain another active workstream that the orchestrator does not manage.
+- Before closing a tab, enumerate its panes and verify that every pane was created by this orchestration and is finished. If the ownership record is missing or ambiguous, leave the tab open and report it.
+- Closing an agent pane terminates its live session and may destroy unrecoverable conversation context. Cleanup is limited to owned, completed panes; it never applies to pre-existing sessions.
 
 ## Sessions
 
@@ -64,11 +71,6 @@ Each session finishes only when its deliverable exists plus its evidence: tests 
 - Verify with `herdr agent get` until the status settles.
 
 ## Event-driven supervision
-
-The two pieces below ship as runnable scripts in scripts/. Both are taken from a working live deployment (the person-orchestration umbrella). They are records-first: the recorder never acts, and only the pinger acts, and only by waking the orchestrator pane.
-- scripts/event_subscriber.py - the reference event subscription (subscribes to pane.agent_status_changed for the given panes, prints matching events as newline JSON, exits after silence). Used by both the recorder and the pinger. Per-pane subscriptions tolerate vanished panes, so one stale pane never kills the whole tap.
-- scripts/events_daemon.sh - the recorder. Subscribes to worker pane state changes AND pane.closed (so dead panes are logged), appends every event to a JSONL queue, and NEVER acts. Auto-reconnects on exit. Run with setsid nohup scripts/events_daemon.sh &.
-- scripts/pinger_loop.sh - the waker. Records done/blocked into a pending queue (deduped against a delivered log so a settled pane is not pinged repeatedly), then prompts the orchestrator pane once it is idle/done. Configure via env vars ME, WORKERS, PANE_MAP, SILENCE, LOG, PENDING, DELIVERED; launch with setsid nohup scripts/pinger_loop.sh &.
 
 Polling only works while the orchestrator turn is active. For coverage between turns, tap the socket event stream. Two pieces, both record-first. Only the pinger acts, and only by waking the orchestrator pane:
 
@@ -146,6 +148,11 @@ Reference pinger loop. The stream never blocks on delivery; matches accumulate i
 
 Run each loop under `setsid nohup ... &` so it survives the turn.
 
+The two pieces above ship as runnable scripts in `scripts/`, taken from a working live deployment. They are record-first: the recorder never acts, and only the pinger acts, and only by waking the orchestrator pane.
+- `scripts/event_subscriber.py` — shared event tap: subscribes to `pane.agent_status_changed` for the watched panes (plus `pane.closed` when `HERDR_CLOSED` is set), prints matching events as newline JSON, exits after silence. Drops vanished panes before connecting so one stale pane never kills the tap.
+- `scripts/events_daemon.sh` — the recorder. Appends every event to a JSONL queue and NEVER acts. Auto-reconnects on exit. Run with `setsid nohup scripts/events_daemon.sh &`.
+- `scripts/pinger_loop.sh` — the waker. Queues `done`/`blocked` on transitions only (tracked in a last-seen file, so a settled pane is never pinged twice for the same state), then prompts the orchestrator pane once it is `idle`/`done`. Configure via env vars `ME`, `WORKERS`, `PANE_MAP`, `SILENCE`, `LOG`, `PENDING`, `LASTSEEN`; launch with `setsid nohup scripts/pinger_loop.sh &`.
+
 ## Watcher troubleshooting (earned the hard way)
 
 - Server-side status filters on the subscription silently match nothing. Subscribe unfiltered per pane and filter `data.agent_status` client-side.
@@ -154,3 +161,12 @@ Run each loop under `setsid nohup ... &` so it survives the turn.
 - `pkill -f <name>` matches your own shell when the pattern text is in its command line (heredocs included). Exclude $$, and never put the kill and a heredoc mentioning the same filename in one shell invocation.
 - A prompt that returns `idle` with no transcript change stalled. Read the pane before retrying to avoid double submission.
 - Short-lived subscribers lose transitions that fire during reconnect because subscriptions do not replay. After every subscriber run, sweep current statuses into pending before delivering, so gaps self-heal on the next cycle.
+- Notify on transitions only. Track the last observed status per pane and queue a wake-up only when a pane changes into done/blocked. A pane resting in done (e.g. a parked worker) must never re-ping; a time-window dedup only delays the spam. Seed the last-seen file from a bootstrap sweep since subscriptions do not replay.
+
+### Hard rule: orchestrator never launches reviewers (environment-agnostic)
+
+- The "pane sessions do not have the orchestrator spawn tool" note is a host observation, NOT the guardrail. In Codex/opencode harnesses the orchestrator DOES expose a spawn agent tool. The prohibition is therefore stated outright and applies regardless of tool availability.
+- The orchestrator must NOT call the spawn agent primitive to perform code review, launch a reviewer, or collect a reviewer verdict for any workstream.
+- To get a review done, the orchestrator prompts the OWNER worker pane (herdr agent prompt <worker> "...") and lets that worker launch the reviewer from its own shell. The orchestrator then reads the verdict from the worker pane transcript. It does not spawn the reviewer itself.
+- If tempted to "just spawn the reviewer to save a round-trip": do not. That is the exact failure mode. Route it through the worker.
+- The ONLY permitted orchestrator-spawned agent is the tripwire watcher (the SOMETHING-HAPPENED-CHECK agent). It only watches pane state changes and reports them; it never reviews code or edits anything.
